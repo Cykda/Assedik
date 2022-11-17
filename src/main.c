@@ -6,46 +6,29 @@
 #include "../include/rules.h"
 #include "../include/define.h"
 #include "../include/bob.h"
-#include "../include/SDL2/SDL.h"
+#include "../include/ui.h"
+
+
 
 
 
 int main(int argc, char** argv)
 {
-    int N = 10;
+    
     plateau p;
+    
+    int N = 5;
     initPlateau(&p, N);
+    pion pawn;
+    pion emptypawn;
+    emptypawn.couleur = NONE;
+    pawn.couleur = RED;
+    
+    explore(&p, 4, 0, RED);    
 
-
-    showBoard(p);
-    printf("\n\n");
-    position pos;
-
-    plateau p2;
-    initPlateau(&p2, p.N);
-    copyBoard(p, &p2);
-
-    for(int i = 1; i < possibleMovesNumber(p) + 1; ++i)
-    {
-        pos = applyMove(&p2, i, (short)RED);
-        if(!BoardEqu(p, p2))
-        {
-            showBoard(p2);
-            directMove(&p2, NONE, pos.x, pos.y);
-            printf("\n\n");
-        }
-        else
-        {
-            directMove(&p2, NONE, pos.x, pos.y);
-        }
-    }
-
-
-    freeborad(&p2);
     freeborad(&p);
     return 0;
 }
-
 
 
 
@@ -56,9 +39,10 @@ int main(int argc, char** argv)
     plateau p;
     pion pawn;
 
-    int N; // taille de la grille
-    int P;// Nombre de pions
-    int X;// Nombre d'alignement nécéssaire
+    int N = 10; // taille de la grille
+    //int P;// Nombre de pions
+    int X = 3;// Nombre d'alignement nécéssaire
+
 
     printf("\nDonnez la taille souhaitee pour a grille (entier) \n");
     scanf("%d",&N);

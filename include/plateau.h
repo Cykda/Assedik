@@ -28,7 +28,7 @@ struct pion
 typedef struct plateau plateau;
 struct plateau
 {
-    pion **plateau;
+    pion** plateau;
     int N;
 };
 

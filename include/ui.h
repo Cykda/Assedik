@@ -1,8 +1,15 @@
-//
-// Created by Gabriel on 11/11/2022.
-//
+#ifndef UI_H
+#define UI_H
+#include "../include/SDL2/SDL.h"
 
-#ifndef ASSEDIK_UI_H
-#define ASSEDIK_UI_H
 
-#endif //ASSEDIK_UI_H
+struct Window
+{
+    SDL_Window* Window;
+};
+
+
+
+
+
+#endif //UI_H

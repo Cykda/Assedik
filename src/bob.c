@@ -16,50 +16,62 @@ void copyBoard(plateau p, plateau* p2)
     }
 }
 
-int possibleMovesNumber(plateau p)
+int getPossibleMovesNumber(plateau p)
 {
-    int possible_moves = 0;
+    
+    int possibleMovesNumber = 0;
+    
+    
     for(int i = 0; i < p.N; ++i)
     {
         for(int j = 0; j < p.N; ++j)
         {
             if(p.plateau[i][j].couleur == NONE)
             {
-                possible_moves++;
+                possibleMovesNumber++;          
             }
         }
     }
-    return possible_moves;
+    
+    return possibleMovesNumber;
 }
 
-position applyMove(plateau* p, int moveNumber, short color)
+position getPossibleMoves(plateau* p, int MoveNumber, short color)
 {
+    
+    
 
+    int CurrentMove = MoveNumber;
     position pos;
-    pos.x = 0;
-    pos.y = 0;
-    int currentMoveNumber = moveNumber;
+    pos.x = -1;
+    pos.y = -1;
+    
     for(int i = 0; i < p->N; ++i)
     {
         for(int j = 0; j < p->N; ++j)
         {
             if(p->plateau[i][j].couleur == NONE)
             {
-                currentMoveNumber--;
+                CurrentMove--;
             }
-            if(currentMoveNumber <= 0)
+            if(CurrentMove <= 0)
             {
-                p->plateau[i][j].couleur = color;
                 pos.x = j;
                 pos.y = i;
+                p->plateau[pos.y][pos.x].couleur = color;
                 return pos;
             }
+            
         }
+        
+        
     }
+    return pos;
+    
 }
 
 
-void explore(plateau* p, int depth, int i)
+void explore(plateau* p, int depth, int i, short color)
 {
     if(i >= depth)
     {
@@ -67,10 +79,32 @@ void explore(plateau* p, int depth, int i)
     }
 
     // listing possible moves
-
-    for(int i = 0; i < possibleMovesNumber(*p); ++i)
+    pion emptypawn;
+    
+    emptypawn.couleur = NONE;
+    
+    for(int i = 1; i < getPossibleMovesNumber(*p) + 1; ++i)
     {
+        emptypawn.pos = getPossibleMoves(p, i, color);
 
+        if(emptypawn.pos.x == -1 && emptypawn.pos.y == -1)
+        {
+            printf("Error At Pawn Place\n");
+            return;
+        }
+
+        showBoard(*p);
+        printf("\n\n\n");
+        if(color == RED)
+        {
+            explore(p, depth, i+1, WHITE);
+        }
+        else
+        {
+            explore(p, depth, i+1, RED);
+        }
+
+        move(p, emptypawn);
     }
 
 
