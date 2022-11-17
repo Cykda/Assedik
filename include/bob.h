@@ -11,7 +11,7 @@ void copyBoard(plateau p, plateau* p2);
 int getPossibleMovesNumber(plateau p);
 int getPossibilityNumber(plateau p);
 position getPossibleMoves(plateau* p, int MoveNumber, short color);
-
+int intMax(int* arr, int size);
 
 
 void explore(plateau* p, int depth, int i, short color);

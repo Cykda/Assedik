@@ -70,6 +70,22 @@ position getPossibleMoves(plateau* p, int MoveNumber, short color)
     
 }
 
+int intMax(int* arr, int size)
+{
+    int max_element = arr[0];
+    for(int i = 0; i < size; ++i)
+    {
+        if(arr[i] > max_element)
+        {
+            max_element = arr[i];
+        }
+    }
+    
+    return max_element;
+}
+
+
+
 
 void explore(plateau* p, int depth, int i, short color)
 {
@@ -93,8 +109,8 @@ void explore(plateau* p, int depth, int i, short color)
             return;
         }
 
-        showBoard(*p);
-        printf("\n\n\n");
+        //showBoard(*p);
+        //printf("\n\n\n");
         if(color == RED)
         {
             explore(p, depth, i+1, WHITE);
