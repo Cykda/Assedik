@@ -8,6 +8,7 @@
 #include "../include/bob.h"
 #include "../include/ui.h"
 #include "../include/SDL2/SDL.h"
+#include "../include/components.h"
 
 
 
@@ -17,9 +18,9 @@ int main(int argc, char** argv)
     
     SDL_Surface* window = NULL;
     SDL_Renderer* renderer = NULL;
-    window = SDL_CreateWindow("Hello World !", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 720, 480, 0);
+    window = SDL_CreateWindow("Hello World !", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    
+
     if(window == NULL)
     {
         printf("Error while creating window\n");
@@ -31,20 +32,38 @@ int main(int argc, char** argv)
         return 1;
     }
     
+    int N = 5;
+    int X = 10;
+    plateau p;
+    initPlateau(&p, N);
     
+    Color BaseColor = setColor(27, 163, 156, 255);
+    pion pawn;
+    pion pawn2;
     
+    pawn.pos.x = 0;
+    pawn.pos.y = 0;
+    pawn.couleur = RED;
+    
+    pawn2.pos.x = 3;
+    pawn2.pos.y = 4;
+    pawn2.couleur = WHITE;
+    
+    move(&p, pawn);
+    move(&p, pawn2);
+    showBoard(p);
 
+    
     SDL_Rect rect;
     rect.x = 10;
     rect.y = 10;
     rect.w = 100;
     rect.h = 100;
     
-    SDL_Rect rect2;
-    rect2.x = 200;
-    rect2.y = 200;
-    rect2.w = 100;
-    rect2.h = 100;
+    SDL_Rect boardRect;
+
+    GraphicalPawns* Wpawns = initGPawns(X, setPosition(0, 0), 50);
+    GraphicalPawns* Rpawns = initGPawns(X, setPosition(0, 0), 50);
 
     bool launched = true;
     
@@ -60,20 +79,27 @@ int main(int argc, char** argv)
                 launched = false;
                 break;
             }
+            else if(event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                printf("%d %d %d %d || %d\n", boardRect.x, boardRect.y, boardRect.w, boardRect.h, isMouseInBoard(boardRect, N));
+            }
         }
+        int color = 0;
         
         SDL_RenderClear(renderer);
+        /*
+        // R: 249 G: 232 B: 204
+        // R: 210 G: 176 B: 151
+       
+       
+        */
+        drawBoard(renderer, rect, p, setColor(249, 232, 204, 255)
+            , setColor(210, 176, 151, 255), BaseColor, BOARD_CENTERED, &boardRect);
+            
         
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderDrawRect(renderer, &rect);
-        SDL_RenderFillRect(renderer, &rect);
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        drawPawns(renderer, Wpawns, X, BaseColor, setColor(255, 255, 255, 255), false);
+        drawPawns(renderer, Rpawns, X, BaseColor, setColor(255, 0, 0, 255), true);
         
-        
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderDrawRect(renderer, &rect2);
-        SDL_RenderFillRect(renderer, &rect2);
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         
         SDL_RenderPresent(renderer);
     }
@@ -82,8 +108,15 @@ int main(int argc, char** argv)
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    
+    
+    freeborad(&p);
+    free(Wpawns);
+    free(Rpawns);
     return 0;
 }
+
+
 
 
 

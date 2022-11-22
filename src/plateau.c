@@ -116,3 +116,14 @@ bool BoardEqu(plateau p1, plateau p2)
     return true;
 
 }
+
+
+position setPosition(int x,  int y)
+{
+    position p;
+    
+    p.x = x;
+    p.y = y;
+    
+    return p;
+}
