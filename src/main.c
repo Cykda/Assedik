@@ -11,7 +11,7 @@
 #include "../include/components.h"
 
 
-
+/*
 int main(int argc, char** argv)
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -87,12 +87,9 @@ int main(int argc, char** argv)
         int color = 0;
         
         SDL_RenderClear(renderer);
-        /*
         // R: 249 G: 232 B: 204
         // R: 210 G: 176 B: 151
-       
-       
-        */
+
         drawBoard(renderer, rect, p, setColor(249, 232, 204, 255)
             , setColor(210, 176, 151, 255), BaseColor, BOARD_CENTERED, &boardRect);
             
@@ -115,12 +112,12 @@ int main(int argc, char** argv)
     free(Rpawns);
     return 0;
 }
+*/
 
 
 
 
 
-/*
 int main(int argc, char** argv)
 {
     printf("\n");
@@ -128,7 +125,7 @@ int main(int argc, char** argv)
     pion pawn;
 
     int N = 10; // taille de la grille
-    //int P;// Nombre de pions
+    int P;// Nombre de pions
     int X = 3;// Nombre d'alignement nécéssaire
 
 
@@ -150,10 +147,6 @@ int main(int argc, char** argv)
     showBoard(p);
 
     printf("\n");
-
-
-    int N = 10;
-    int X = 5;
 
 
     initPlateau(&p, N);
@@ -194,11 +187,13 @@ int main(int argc, char** argv)
         int state = check_win(p, X);
         if(state == RED)
         {
+            showBoard(p);
             printf("\nLe joueur rouge a gagne\n");
             break;
         }
         else if(state == WHITE)
         {
+            showBoard(p);
             printf("\nLe joueur blanc a gagne\n");
             break;
         }
@@ -212,4 +207,3 @@ int main(int argc, char** argv)
     freeborad(&p);
     return 0;
 }
-*/
