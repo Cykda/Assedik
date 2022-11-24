@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include "../include/plateau.h"
 #include "../include/moves.h"
 #include "../include/rules.h"
@@ -11,7 +12,7 @@
 #include "../include/components.h"
 
 
-
+/*
 int main(int argc, char** argv)
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -33,10 +34,10 @@ int main(int argc, char** argv)
     }
     
     int N = 5;
-    int X = 10;
+    int X = 100;
     plateau p;
     initPlateau(&p, N);
-    
+
     Color BaseColor = setColor(27, 163, 156, 255);
     pion pawn;
     pion pawn2;
@@ -87,12 +88,12 @@ int main(int argc, char** argv)
         int color = 0;
         
         SDL_RenderClear(renderer);
-        /*
+
         // R: 249 G: 232 B: 204
         // R: 210 G: 176 B: 151
        
-       
-        */
+
+
         drawBoard(renderer, rect, p, setColor(249, 232, 204, 255)
             , setColor(210, 176, 151, 255), BaseColor, BOARD_CENTERED, &boardRect);
             
@@ -110,13 +111,12 @@ int main(int argc, char** argv)
     SDL_Quit();
     
     
-    freeborad(&p);
+    freeboard(&p);
     free(Wpawns);
     free(Rpawns);
     return 0;
 }
-
-
+*/
 
 
 
@@ -130,8 +130,8 @@ int main(int argc, char** argv)
     int N = 10; // taille de la grille
     //int P;// Nombre de pions
     int X = 3;// Nombre d'alignement nécéssaire
-
-
+    
+    /*
     printf("\nDonnez la taille souhaitee pour a grille (entier) \n");
     scanf("%d",&N);
     fflush(stdin);
@@ -213,3 +213,33 @@ int main(int argc, char** argv)
     return 0;
 }
 */
+
+
+int main(int argc, char** argv)
+{
+    
+    
+    int N = 10;
+    
+    plateau p;
+    initPlateau(&p, N);
+    
+    //showBoard(p);
+    
+    
+    
+    
+
+    int inf = INFINITY;
+    
+    int result = explore(&p, 2, true);
+    
+    printf("\n\n");
+    printf("Resultat: %d\n", result);
+    printf("-inf: %d\n", -inf);
+    printf("inf: %d\n", inf);
+    
+    
+    freeboard(&p);
+    return 0;
+}

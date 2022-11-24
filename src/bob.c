@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "../include/bob.h"
 
 
@@ -85,44 +86,102 @@ int intMax(int* arr, int size)
 }
 
 
-
-
-void explore(plateau* p, int depth, int i, short color)
+int getBoardScore(plateau p, short color)
 {
-    if(i >= depth)
+    
+    int score = 0;
+    
+    
+    for(int i = 0; i < p.N; ++i)
     {
-        return;
+        for(int j = 0; j < p.N; ++j)
+        {
+            if(p.plateau[i][j].couleur == color)
+            {
+                score++;
+            }
+            
+        }
+    }
+    
+    return score;
+}
+
+float get_heuristic_value(plateau* p)
+{
+    return (float)getBoardScore(*p, RED) / (float)getBoardScore(*p, WHITE);
+}
+
+int explore(plateau* p, int depth, bool minimizing)
+{
+    if(depth <= 0 || check_win(*p, 3));
+    {
+        return get_heuristic_value(p);
     }
 
-    // listing possible moves
-    pion emptypawn;
-    
-    emptypawn.couleur = NONE;
-    
-    for(int i = 1; i < getPossibleMovesNumber(*p) + 1; ++i)
+    int value;
+
+    if(minimizing)
     {
-        emptypawn.pos = getPossibleMoves(p, i, color);
+        value = -INFINITY;
 
-        if(emptypawn.pos.x == -1 && emptypawn.pos.y == -1)
+        // listing possible moves
+        pion emptypawn;
+        
+        emptypawn.couleur = NONE;
+        
+        for(int i = 1; i < getPossibleMovesNumber(*p) + 1; ++i)
         {
-            printf("Error At Pawn Place\n");
-            return;
+            emptypawn.pos = getPossibleMoves(p, i, RED);
+
+            if(emptypawn.pos.x == -1 && emptypawn.pos.y == -1)
+            {
+                printf("Error At Pawn Place\n");
+                return;
+            }
+
+
+
+
+            
+            printf("%d\n", value);
+            value = fmax(value, explore(p, depth - 1, false));
+            move(p, emptypawn);
         }
 
-        //showBoard(*p);
-        //printf("\n\n\n");
-        if(color == RED)
-        {
-            explore(p, depth, i+1, WHITE);
-        }
-        else
-        {
-            explore(p, depth, i+1, RED);
-        }
-
-        move(p, emptypawn);
     }
+    else
+    {
+        // listing possible moves
+        pion emptypawn;
+        value = INFINITY;
+        emptypawn.couleur = NONE;
+        
+        for(int i = 1; i < getPossibleMovesNumber(*p) + 1; ++i)
+        {
+            emptypawn.pos = getPossibleMoves(p, i, WHITE);
+
+            if(emptypawn.pos.x == -1 && emptypawn.pos.y == -1)
+            {
+                printf("Error At Pawn Place\n");
+                return;
+            }
 
 
+
+
+
+            value = fmin(value, explore(p, depth - 1, true));
+            printf("%d\n", value);
+            move(p, emptypawn);
+        }
+  
+    }
+    
+    return value;
+
+
+
+    
 
 }

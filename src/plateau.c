@@ -47,7 +47,7 @@ int initPlateau(plateau* p, int N)
 }
 
 
-void freeborad(plateau* p)
+void freeboard(plateau* p)
 {
     for(int i = 0; i < p->N; ++i)
     {

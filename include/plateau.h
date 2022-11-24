@@ -34,7 +34,7 @@ struct plateau
 
 
 int initPlateau(plateau* p, int N);
-void freeborad(plateau* p);
+void freeboard(plateau* p);
 void showBoard(plateau p);
 bool BoardEqu(plateau p1, plateau p2);
 position setPosition(int x,  int y);
