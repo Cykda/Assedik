@@ -112,8 +112,8 @@ int main(int argc, char** argv)
     free(Rpawns);
     return 0;
 }
-*/
 
+*/
 
 
 
@@ -124,24 +124,34 @@ int main(int argc, char** argv)
     plateau p;
     pion pawn;
 
-    int N = 10; // taille de la grille
+    int N; // taille de la grille
     int P;// Nombre de pions
-    int X = 3;// Nombre d'alignement nécéssaire
+    int X;// Nombre d'alignement nécéssaire
+    int NBB,NBR; //Nombre de pions restants à placer
+    int *pNBB, *pNBR;
 
 
-    printf("\nDonnez la taille souhaitee pour a grille (entier) \n");
-    scanf("%d",&N);
-    fflush(stdin);
+    do {
+        printf("\nDonnez la taille souhaitee pour a grille (entier, minimim 3 cases) \n");
+        scanf("%d",&N);
+        fflush(stdin);
+    }while (N<3);
+
     do {
         printf("\nDonnez le nombre de pions souhaites (plus petit que la taile du plateau) (entier) \n");
         scanf("%d",&P);
         fflush(stdin);
-    } while (P>N);
+    } while (P>N || P<2);
+    NBB=P;
+    NBR=P;
+    pNBB=&NBB;
+    pNBR=&NBR;
     do {
         printf("\nDonnez le nombre de pions a alligner pour gagner (plus petit ou egal au nombre de pions par joueur) (entier) \n");
         scanf("%d",&X);
         fflush(stdin);
     } while (X>P);
+
 
     initPlateau(&p, N);
     showBoard(p);
@@ -153,22 +163,18 @@ int main(int argc, char** argv)
     showBoard(p);
 
 
-
-
-
     while(true)
     {
 
         pawn = inputPawn("Choisissez la couleur (1: rouge, 0: blanc, -2: quitter le programme): ",
             "Choisissez la position (X, Y): ");
 
-
         if(pawn.couleur == -2)
         {
             break;
         }
 
-        if(pawn.pos.x < 0 || pawn.pos.x > (N - 1) || pawn.pos.y < 0 || pawn.pos.y > (N - 1))
+        if(pawn.pos.x < 0 || pawn.pos.x > (N - 1) || pawn.pos.y < 0 || pawn.pos.y > (N - 1) || p.plateau[pawn.pos.x][pawn.pos.y].couleur!=NONE)
         {
             printf("position non valide\n");
             continue;
@@ -179,10 +185,24 @@ int main(int argc, char** argv)
             printf("Erreur de saisie de couleur\n");
             continue;
         }
+        /*if (pawn.couleur==0)
+        {
+            pawn.quantite=*pNBB;
+        }
+        if (pawn.couleur==1)
+        {
+
+            pawn.quantite=*pNBR;
+        }
+        printf("\n\nnb rouge : %d\nnb blanc : %d \nquantite pawn : %d\n\n",NBR,NBB,pawn.quantite);
+        if(pawn.quantite <= 0)
+        {
+            printf("Plus de jetons %s Disponnibles \n",pawn.couleur);
+            break;
+        }*/
 
 
-
-        move(&p, pawn);
+        move(&p, pawn,pNBB,pNBR);
 
         int state = check_win(p, X);
         if(state == RED)
