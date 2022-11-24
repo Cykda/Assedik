@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "../include/bob.h"
 
-
+/*
 
 void copyBoard(plateau p, plateau* p2)
 {
@@ -125,4 +125,4 @@ void explore(plateau* p, int depth, int i, short color)
 
 
 
-}
+}*/
