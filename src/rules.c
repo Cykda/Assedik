@@ -17,19 +17,26 @@ int check_win(plateau p, int X)
             if(p.plateau[i][j].couleur == RED)
             {
                 RedSum++;
+                WhiteSum=0;
+                if(RedSum >= X)
+                {
+                    return RED;
+                }
             }
             else if(p.plateau[i][j].couleur == WHITE)
             {
                 WhiteSum++;
+                RedSum=0;
+                if(WhiteSum >= X)
+                {
+                    return WHITE;
+                }
             }
-        }
-        if(RedSum >= X)
-        {
-            return RED;
-        }
-        else if(WhiteSum >= X)
-        {
-            return WHITE;
+            else if (p.plateau[i][j].couleur == NONE)
+            {
+                RedSum=0;
+                WhiteSum=0;
+            }
         }
         WhiteSum = 0;
         RedSum = 0;
@@ -50,10 +57,25 @@ int check_win(plateau p, int X)
             if(p.plateau[j][i].couleur == RED)
             {
                 RedSum++;
+                WhiteSum=0;
+                if(RedSum >= X)
+                {
+                    return RED;
+                }
             }
             else if(p.plateau[j][i].couleur == WHITE)
             {
                 WhiteSum++;
+                RedSum=0;
+                if(WhiteSum >= X)
+                {
+                    return WHITE;
+                }
+            }
+            else if (p.plateau[j][i].couleur == NONE)
+            {
+                RedSum=0;
+                WhiteSum=0;
             }
         }
 
@@ -75,11 +97,7 @@ int check_win(plateau p, int X)
 
 
 
+
+
     return NONE;
 }
-
-
-
-
-
-

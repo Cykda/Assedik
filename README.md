@@ -13,4 +13,4 @@ algo: MinMax
 
 - [X] Commencer Bob
 - [ ] Finir les cas de victoire
-- [ ] changer les int en short dans l'enum couleur
+- [X] changer les int en short dans l'enum couleur

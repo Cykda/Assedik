@@ -23,6 +23,7 @@ struct pion
 {
     int couleur;
     position pos;
+    int quantite;
 };
 
 typedef struct plateau plateau;
