@@ -4,10 +4,18 @@
 
 
 
-void move(plateau* p, pion pawn)
+void move(plateau* p, pion pawn,int *pNBB, int *pNBR)
 {
 
     p->plateau[pawn.pos.y][pawn.pos.x].couleur = pawn.couleur;
+    /*if (pawn.couleur==0)
+    {
+        *pNBB=*pNBB-1;
+    }
+    if (pawn.couleur==1)
+    {
+        *pNBR=*pNBR-1;
+    }*/
 
 }
 
