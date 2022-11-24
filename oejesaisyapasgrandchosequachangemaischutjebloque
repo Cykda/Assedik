@@ -1,0 +1,143 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "../include/plateau.h"
+#include "../include/moves.h"
+#include "../include/rules.h"
+#include "../include/define.h"
+#include "../include/bob.h"
+#include "../include/ui.h"
+#include "../include/SDL2/SDL.h"
+#include "../include/components.h"
+#include "../include/SDL2/SDL_ttf.h"
+
+
+int main(int argc, char** argv)
+{
+
+    SDL_Surface* window = NULL;
+    SDL_Renderer* renderer = NULL;
+
+    //lancement SDL
+    SDL_Init(SDL_INIT_VIDEO);
+
+    // Creation fenetre + rendu
+    window = SDL_CreateWindow("ça va niquer des mères", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, SDL_WINDOW_RESIZABLE);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+    TTF_Init();
+
+    // Init des polices / couleur
+    TTF_Font* Sans = TTF_OpenFont("FreeSans.ttf", 24);
+    SDL_Color White = {0, 0, 0, 0};
+
+    //verifs pour voir si ça fonctionne bien
+    if(window == NULL)
+    {
+        printf("Error while creating window\n");
+        return 1;
+    }
+    if(renderer == NULL)
+    {
+        printf("Error while creating renderer\n");
+        return 1;
+    }
+
+    //crea de la first surface
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(Sans, "niquonsdesmereslesenfants", White);
+
+    // conversion en texture
+    SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+    SDL_Rect Message_rect;
+    Message_rect.x = 0;
+    Message_rect.y = 0;
+    Message_rect.w = 100;
+    Message_rect.h = 100;
+
+
+    int N = 5;
+    int X = 10;
+    plateau p;
+    initPlateau(&p, N);
+    
+    Color BaseColor = setColor(46, 83, 76, 255); // color du background
+    pion pawn;
+    pion pawn2;
+    
+    pawn.pos.x = 0;
+    pawn.pos.y = 0;
+    pawn.couleur = RED;
+    
+    pawn2.pos.x = 3;
+    pawn2.pos.y = 4;
+    pawn2.couleur = WHITE;
+    
+    move(&p, pawn);
+    move(&p, pawn2);
+    showBoard(p);
+
+    
+    SDL_Rect rect;
+    rect.x = 10;
+    rect.y = 10;
+    rect.w = 100;
+    rect.h = 100;
+    
+    SDL_Rect boardRect;
+
+    GraphicalPawns* Wpawns = initGPawns(X, setPosition(0, 0), 50);
+    GraphicalPawns* Rpawns = initGPawns(X, setPosition(0, 0), 50);
+
+    SDL_bool launched = SDL_TRUE;
+    
+    while(launched)
+    {
+        SDL_Event event;
+        
+        while(SDL_PollEvent(&event))
+        {
+            switch(event.type)
+            {
+                case SDL_QUIT:
+                    launched = SDL_FALSE;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        int color = 0;
+        
+        SDL_RenderClear(renderer);
+        /*
+        // R: 249 G: 232 B: 204
+        // R: 210 G: 176 B: 151
+       
+       
+        */
+        drawBoard(renderer, rect, p, setColor(249, 232, 204, 255)
+            , setColor(210, 176, 151, 255), BaseColor, BOARD_CENTERED, &boardRect);
+            
+        
+        drawPawns(renderer, Wpawns, X, BaseColor, setColor(255, 255, 255, 255), false);
+        drawPawns(renderer, Rpawns, X, BaseColor, setColor(255, 0, 0, 255), true);
+        
+        SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+        SDL_RenderPresent(renderer);
+    }
+
+    SDL_FreeSurface(surfaceMessage);
+    SDL_DestroyTexture(Message);
+    TTF_Quit();
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    
+    
+    freeborad(&p);
+    free(Wpawns);
+    free(Rpawns);
+    return EXIT_SUCCESS;
+}
