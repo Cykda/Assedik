@@ -128,11 +128,13 @@ int main(int argc, char** argv)
     int P;// Nombre de pions
     int X;// Nombre d'alignement nécéssaire
     int NBB,NBR; //Nombre de pions restants à placer
-    int *pNBB, *pNBR;
+    int Phase; //Phase actuelle du jeu (1 ou 2)
+    int *pNBB, *pNBR;//Pointeurs sur les variables NBB et NBR
+    int tour;//Variable qui sait quel joueur doit jouer
 
 
     do {
-        printf("\nDonnez la taille souhaitee pour a grille (entier, minimim 3 cases) \n");
+        printf("\nDonnez la taille souhaitee pour la grille (entier, minimim 3 cases) \n");
         scanf("%d",&N);
         fflush(stdin);
     }while (N<3);
@@ -151,6 +153,11 @@ int main(int argc, char** argv)
         scanf("%d",&X);
         fflush(stdin);
     } while (X>P);
+    do {
+        printf("\nDonnez le Joueur qui doit commencer (1: rouge ou 0: blanc)\n");
+        scanf("%d",&tour);
+        fflush(stdin);
+    } while (tour!=1 && tour!=0);
 
 
     initPlateau(&p, N);
@@ -161,48 +168,72 @@ int main(int argc, char** argv)
 
     initPlateau(&p, N);
     showBoard(p);
+    Phase=1;
 
 
-    while(true)
+    while(Phase==1)
     {
+        if (tour==1)
+        {
+            pawn = inputPawn("Joueur rouge, c'est a vous. Voullez-vous quitter le programme ? Si oui, tapez 1. Sinon, tapez 0 --> ",
+                             "Choisissez la position (X, Y): ",tour);
+        }
+        if (tour==0)
+        {
+            pawn = inputPawn("Joueur blanc, c'est a vous. Voullez-vous quitter le programme ? Si oui, tapez 1. Sinon, tapez 0 --> ",
+                             "Choisissez la position (X, Y): ",tour);
+        }
 
-        pawn = inputPawn("Choisissez la couleur (1: rouge, 0: blanc, -2: quitter le programme): ",
-            "Choisissez la position (X, Y): ");
-
-        if(pawn.couleur == -2)
+        if(pawn.info.couleur == -2)
         {
             break;
         }
-
-        if(pawn.pos.x < 0 || pawn.pos.x > (N - 1) || pawn.pos.y < 0 || pawn.pos.y > (N - 1) || p.plateau[pawn.pos.x][pawn.pos.y].couleur!=NONE)
+        if(pawn.info.couleur == 1)
         {
-            printf("position non valide\n");
+            pawn.info.quantite=NBR;
+        }
+        if(pawn.info.couleur == 0)
+        {
+            pawn.info.quantite=NBB;
+        }
+
+        if(pawn.pos.x < 0 || pawn.pos.x > (N - 1) || pawn.pos.y < 0 || pawn.pos.y > (N - 1))
+        {
+            printf("\nposition non valide : en dehors du plateau\n");
             continue;
         }
 
-        if(pawn.couleur != 1 && pawn.couleur != 0 && pawn.couleur != -2)
+        if(p.plateau[pawn.pos.y][pawn.pos.x].info.couleur!=-1)
         {
-            printf("Erreur de saisie de couleur\n");
+            printf("\nposition non valide : Case deja occupee par un autre pion\n");
             continue;
         }
-        /*if (pawn.couleur==0)
-        {
-            pawn.quantite=*pNBB;
-        }
-        if (pawn.couleur==1)
-        {
 
-            pawn.quantite=*pNBR;
-        }
-        printf("\n\nnb rouge : %d\nnb blanc : %d \nquantite pawn : %d\n\n",NBR,NBB,pawn.quantite);
-        if(pawn.quantite <= 0)
+        /*if(pawn.info.couleur != 1 && pawn.info.couleur != 0 && pawn.info.couleur != -2)
         {
-            printf("Plus de jetons %s Disponnibles \n",pawn.couleur);
-            break;
+            printf("\nErreur de saisie de couleur\n");
+            continue;
+        }
+
+        if(pawn.info.quantite <= 0)
+        {
+            printf("\nPlus de jetons %d Disponnibles (0 = Blanc ou 1 = Rouge)\n",pawn.info.couleur);
+            continue;
         }*/
 
 
-        move(&p, pawn,pNBB,pNBR);
+        move(&p,pawn,pNBB,pNBR);
+
+        printf("\n\nnb rouge restant : %d\nnb blanc restant : %d \n\n",NBR,NBB);
+
+        if (tour==1)
+        {
+            tour=0;
+        }
+        else if (tour==0)
+        {
+            tour=1;
+        }
 
         int state = check_win(p, X);
         if(state == RED)
@@ -220,6 +251,12 @@ int main(int argc, char** argv)
 
         printf("\n");
         showBoard(p);
+
+        if (NBB<=0 && NBR<=0)
+        {
+            printf("\n\nFelicitation, tout les pions sont places. La phase 1 est donc terminee. Comme personne n'a gagné suite a cette phase, on peut passer a la phase 2\n\n");
+            Phase=2;
+        }
     }
 
 
