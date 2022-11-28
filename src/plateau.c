@@ -30,7 +30,7 @@ int initPlateau(plateau* p, int N)
     {
         for(int j = 0; j < N; ++j)
         {
-            p->plateau[i][j].couleur = NONE;
+            p->plateau[i][j].info.couleur = NONE;
             p->plateau[i][j].pos.x = j;
             p->plateau[i][j].pos.y = i;
 
@@ -77,11 +77,11 @@ void showBoard(plateau p)
                 printf("%d    ", i);
             }
 
-            if(p.plateau[i][j].couleur == 1)
+            if(p.plateau[i][j].info.couleur == 1)
             {
                 printf("| R ");
             }
-            else if(p.plateau[i][j].couleur == 0)
+            else if(p.plateau[i][j].info.couleur == 0)
             {
                 printf("| B ");
             }
@@ -107,7 +107,7 @@ bool BoardEqu(plateau p1, plateau p2)
     {
         for(int j = 0; j < p1.N; ++j)
         {
-            if(p1.plateau[i][j].couleur != p2.plateau[i][j].couleur)
+            if(p1.plateau[i][j].info.couleur != p2.plateau[i][j].info.couleur)
             {
                 return false;
             }
