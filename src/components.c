@@ -133,11 +133,11 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
             position pos;
             pos.x = rect.x + rect.w;
             pos.y = rect.y + rect.h;
-            if(p.plateau[i][j].couleur == RED)
+            if(p.plateau[i][j].info.couleur == RED)
             {
                 DrawCircle(renderer, pos.x, pos.y, rect.h / 2, setColor(255, 0, 0, 255), base);
             }
-            else if(p.plateau[i][j].couleur == WHITE)
+            else if(p.plateau[i][j].info.couleur == WHITE)
             {
                 DrawCircle(renderer, pos.x, pos.y, rect.w / 2, setColor(255, 255, 255, 255), base);
             }
