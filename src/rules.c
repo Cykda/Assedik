@@ -15,7 +15,7 @@ int check_win(plateau p, int X)
     {
         for(int j = 0; j < p.N; ++j)
         {
-            if(p.plateau[i][j].couleur == RED)
+            if(p.plateau[i][j].info.couleur == RED)
             {
                 RedSum++;
                 WhiteSum=0;
@@ -24,7 +24,7 @@ int check_win(plateau p, int X)
                     return RED;
                 }
             }
-            else if(p.plateau[i][j].couleur == WHITE)
+            else if(p.plateau[i][j].info.couleur == WHITE)
             {
                 WhiteSum++;
                 RedSum=0;
@@ -33,7 +33,7 @@ int check_win(plateau p, int X)
                     return WHITE;
                 }
             }
-            else if (p.plateau[i][j].couleur == NONE)
+            else if (p.plateau[i][j].info.couleur == NONE)
             {
                 RedSum=0;
                 WhiteSum=0;
@@ -51,56 +51,56 @@ int check_win(plateau p, int X)
     // colones
     for(int i = 0; i < p.N; ++i) {
         for (int j = 0; j < p.N; ++j) {
-            if (p.plateau[j][i].couleur == RED) {
+            if (p.plateau[j][i].info.couleur == RED) {
                 RedSum++;
                 WhiteSum = 0;
                 if (RedSum >= X) {
                     return RED;
                 }
-            } else if (p.plateau[j][i].couleur == WHITE) {
+            } else if (p.plateau[j][i].info.couleur == WHITE) {
                 WhiteSum++;
                 RedSum = 0;
                 if (WhiteSum >= X) {
                     return WHITE;
                 }
-            } else if (p.plateau[j][i].couleur == NONE) {
+            } else if (p.plateau[j][i].info.couleur == NONE) {
                 RedSum = 0;
                 WhiteSum = 0;
             }
         }
     }
+
+    RedSum=0;
+    WhiteSum=0;
+
     // diagonales haut gache bas droite
     for(int i = 0; i < p.N; ++i) {
         for (int j = 0; j < p.N; ++j) {
             int I=i,J=j;
             //Rouge
-            if (p.plateau[i][j].couleur == RED) {
+            if (p.plateau[i][j].info.couleur == RED) {
                 I=i;
                 J=j;
                 RedSum++;
                 while (Diago == 0) {
-                    /*if (I+1 > p.N-1 || J+1 > p.N-1){
-                        printf("\n\nVU\n\n");
-                        Diago=1;
-                        RedSum--;
+                    if (I+1 > p.N-1 || J+1 > p.N-1){
+                        RedSum=0;
+                        break;
                     } else{
-                        printf("\nou pas\n");
                         I++;
                         J++;
-                    }*/
-                    I++;
-                    J++;
-                    if (p.plateau[I][J].couleur == RED) {
+                    }
+                    if (p.plateau[I][J].info.couleur == RED) {
                         RedSum++;
                         if (RedSum >= X) {
                             return RED;
                         }
                     }
-                    if (p.plateau[I][J].couleur == WHITE) {
+                    if (p.plateau[I][J].info.couleur == WHITE) {
                         RedSum = 0;
                         Diago = 1;
                     }
-                    if (p.plateau[I][J].couleur == NONE) {
+                    if (p.plateau[I][J].info.couleur == NONE) {
                         RedSum = 0;
                         Diago = 1;
                     }
@@ -108,25 +108,30 @@ int check_win(plateau p, int X)
             }
             Diago = 0;
             //Blanc
-            if (p.plateau[i][j].couleur == WHITE) {
+            if (p.plateau[i][j].info.couleur == WHITE) {
                 I=i;
                 J=j;
                 WhiteSum++;
                 while (Diago == 0) {
-                    I++;
-                    J++;
-                    if (p.plateau[I][J].couleur == WHITE) {
+                    if (I+1 > p.N-1 || J+1 > p.N-1){
+                        WhiteSum=0;
+                        break;
+                    } else{
+                        I++;
+                        J++;
+                    }
+                    if (p.plateau[I][J].info.couleur == WHITE) {
                         WhiteSum++;
                         if (WhiteSum >= X) {
                             return WHITE;
                         }
                     }
 
-                    if (p.plateau[I][J].couleur == RED) {
+                    if (p.plateau[I][J].info.couleur == RED) {
                         WhiteSum = 0;
                         Diago = 1;
                     }
-                    if (p.plateau[I][J].couleur == NONE) {
+                    if (p.plateau[I][J].info.couleur == NONE) {
                         WhiteSum = 0;
                         Diago = 1;
                     }
@@ -135,29 +140,38 @@ int check_win(plateau p, int X)
             Diago = 0;
         }
     }
+
+    WhiteSum=0;
+    RedSum=0;
+
     // diagonales bas gauche haut droite
     for(int i = 0; i < p.N; ++i) {
         for (int j = 0; j < p.N; ++j) {
             int I=i,J=j;
             //Rouge
-            if (p.plateau[i][j].couleur == RED) {
+            if (p.plateau[i][j].info.couleur == RED) {
                 I=i;
                 J=j;
                 RedSum++;
                 while (Diago == 0) {
-                    I++;
-                    J--;
-                    if (p.plateau[I][J].couleur == RED) {
+                    if (I+1 > p.N-1 || J-1 > p.N-1){
+                        RedSum=0;
+                        break;
+                    } else{
+                        I++;
+                        J--;
+                    }
+                    if (p.plateau[I][J].info.couleur == RED) {
                         RedSum++;
                         if (RedSum >= X) {
                             return RED;
                         }
                     }
-                    if (p.plateau[I][J].couleur == WHITE) {
+                    if (p.plateau[I][J].info.couleur == WHITE) {
                         RedSum = 0;
                         Diago = 1;
                     }
-                    if (p.plateau[I][J].couleur == NONE) {
+                    if (p.plateau[I][J].info.couleur == NONE) {
                         RedSum = 0;
                         Diago = 1;
                     }
@@ -165,25 +179,30 @@ int check_win(plateau p, int X)
             }
             Diago = 0;
             //Blanc
-            if (p.plateau[i][j].couleur == WHITE) {
+            if (p.plateau[i][j].info.couleur == WHITE) {
                 I=i;
                 J=j;
                 WhiteSum++;
                 while (Diago == 0) {
-                    I++;
-                    J--;
-                    if (p.plateau[I][J].couleur == WHITE) {
+                    if (I+1 > p.N-1 || J-1 > p.N-1){
+                        WhiteSum=0;
+                        break;
+                    } else{
+                        I++;
+                        J--;
+                    }
+                    if (p.plateau[I][J].info.couleur == WHITE) {
                         WhiteSum++;
                         if (WhiteSum >= X) {
                             return WHITE;
                         }
                     }
 
-                    if (p.plateau[I][J].couleur == RED) {
+                    if (p.plateau[I][J].info.couleur == RED) {
                         WhiteSum = 0;
                         Diago = 1;
                     }
-                    if (p.plateau[I][J].couleur == NONE) {
+                    if (p.plateau[I][J].info.couleur == NONE) {
                         WhiteSum = 0;
                         Diago = 1;
                     }
@@ -192,7 +211,9 @@ int check_win(plateau p, int X)
             Diago = 0;
         }
     }
+
     WhiteSum=0;
     RedSum=0;
+
     return NONE;
 }
