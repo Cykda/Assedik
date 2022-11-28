@@ -18,12 +18,18 @@ struct position
     int y;
 };
 
+typedef struct couleur couleur;
+struct couleur
+{
+    int couleur;
+    int quantite;
+};
+
 typedef struct pion pion;
 struct pion
 {
-    int couleur;
+    couleur info;
     position pos;
-    int quantite;
 };
 
 typedef struct plateau plateau;
