@@ -131,6 +131,7 @@ int main(int argc, char** argv)
     int Phase; //Phase actuelle du jeu (1 ou 2)
     int *pNBB, *pNBR;//Pointeurs sur les variables NBB et NBR
     int tour;//Variable qui sait quel joueur doit jouer
+    int reponse_RED,reponse_WHITE;//Variable qui vois si le joueur choisis de déplacer le pion ou d'utiliser le coup spécial
 
 
     do {
@@ -169,7 +170,6 @@ int main(int argc, char** argv)
     initPlateau(&p, N);
     showBoard(p);
     Phase=1;
-
 
     while(Phase==1)
     {
@@ -222,7 +222,7 @@ int main(int argc, char** argv)
         }*/
 
 
-        move(&p,pawn,pNBB,pNBR);
+        placement(&p,pawn,pNBB,pNBR);
 
         printf("\n\nnb rouge restant : %d\nnb blanc restant : %d \n\n",NBR,NBB);
 
@@ -259,6 +259,116 @@ int main(int argc, char** argv)
         }
     }
 
+    while(Phase==2)
+    {
+        printf("\n");
+        showBoard(p);
+        if (tour==1)
+        {
+            if (reponse_RED==2)
+            {
+                printf("\nJoueur rouge, vous devez replacer votre pion");
+                coup_special(&p,tour,N);
+                int state = check_win(p, X);
+                if(state == RED)
+                {
+                    showBoard(p);
+                    printf("\nLe joueur rouge a gagne\n");
+                    break;
+                }
+                tour=0;
+                reponse_RED=0;
+                continue;
+            }
+        }
+        else if (tour==0)
+        {
+            if (reponse_WHITE==2)
+            {
+                printf("\nJoueur blanc, vous devez replacer votre pion");
+                coup_special(&p,tour,N);
+                int state = check_win(p, X);
+                if(state == WHITE)
+                {
+                    showBoard(p);
+                    printf("\nLe joueur blanc a gagne\n");
+                    break;
+                }
+                tour=1;
+                reponse_WHITE=0;
+                continue;
+            }
+        }
+        if (tour==1)
+        {
+            do
+            {
+                pawn = inputPawn("\nJoueur rouge, c'est a vous. Voullez-vous quitter le programme ? Si oui, tapez 1. Sinon, tapez 0 --> ",
+                              "\nChoisissez la position Du pion que vous souhaitez deplacer (X, Y): ",tour);
+                if (p.plateau[pawn.pos.y][pawn.pos.x].info.couleur!=1)
+                {
+                    printf("\nERREUR, Cette case ne contient pas l'un de vos pions. ");
+                }
+            } while (p.plateau[pawn.pos.y][pawn.pos.x].info.couleur!=1);
+        }
+        if (tour==0)
+            do
+            {
+                pawn = inputPawn("\nJoueur blanc, c'est a vous. Voullez-vous quitter le programme ? Si oui, tapez 1. Sinon, tapez 0 --> ",
+                                 "\nChoisissez la position Du pion que vous souhaitez deplacer (X, Y): ",tour);
+                if (p.plateau[pawn.pos.y][pawn.pos.x].info.couleur!=0)
+                {
+                    printf("\nERREUR, Cette case ne contient pas l'un de vos pions.\n");
+                }
+            } while (p.plateau[pawn.pos.y][pawn.pos.x].info.couleur!=0);
+        if (tour==1)
+        {
+            reponse_RED=choix_deplacement(&p,pawn);
+        }
+        else if (tour==0)
+        {
+            reponse_WHITE=choix_deplacement(&p,pawn);
+        }
+
+
+
+        if (tour==1)
+        {
+            if (reponse_RED==1)
+            {
+                deplacement_pion(&p,pawn,tour,N);
+            }
+        }
+        else if (tour==0)
+        {
+            if (reponse_WHITE==1)
+            {
+                deplacement_pion(&p,pawn,tour,N);
+            }
+        }
+        int state = check_win(p, X);
+        if(state == RED)
+        {
+            showBoard(p);
+            printf("\nLe joueur rouge a gagne\n");
+            break;
+        }
+        if(state == WHITE)
+        {
+            showBoard(p);
+            printf("\nLe joueur blanc a gagne\n");
+            break;
+        }
+
+        if (tour==1)
+        {
+            tour=0;
+        }
+        else if (tour==0)
+        {
+            tour=1;
+        }
+    }
 
     printf("\nFin du programme");
     freeborad(&p);
