@@ -1,8 +1,8 @@
-#include <stdio.h>
+/*#include <stdio.h>
 #include <stdlib.h>
 #include "../include/bob.h"
 
-/*
+
 
 void copyBoard(plateau p, plateau* p2)
 {
@@ -10,7 +10,7 @@ void copyBoard(plateau p, plateau* p2)
     {
         for(int j = 0; j < p.N; ++j)
         {
-            p2->plateau[i][j].couleur = p.plateau[i][j].couleur;
+            p2->plateau[i][j].info.couleur = p.plateau[i][j].info.couleur;
             p2->plateau[i][j].pos = p.plateau[i][j].pos;
         }
     }
@@ -18,39 +18,39 @@ void copyBoard(plateau p, plateau* p2)
 
 int getPossibleMovesNumber(plateau p)
 {
-    
+
     int possibleMovesNumber = 0;
-    
-    
+
+
     for(int i = 0; i < p.N; ++i)
     {
         for(int j = 0; j < p.N; ++j)
         {
-            if(p.plateau[i][j].couleur == NONE)
+            if(p.plateau[i][j].info.couleur == NONE)
             {
-                possibleMovesNumber++;          
+                possibleMovesNumber++;
             }
         }
     }
-    
+
     return possibleMovesNumber;
 }
 
 position getPossibleMoves(plateau* p, int MoveNumber, short color)
 {
-    
-    
+
+
 
     int CurrentMove = MoveNumber;
     position pos;
     pos.x = -1;
     pos.y = -1;
-    
+
     for(int i = 0; i < p->N; ++i)
     {
         for(int j = 0; j < p->N; ++j)
         {
-            if(p->plateau[i][j].couleur == NONE)
+            if(p->plateau[i][j].info.couleur == NONE)
             {
                 CurrentMove--;
             }
@@ -58,16 +58,15 @@ position getPossibleMoves(plateau* p, int MoveNumber, short color)
             {
                 pos.x = j;
                 pos.y = i;
-                p->plateau[pos.y][pos.x].couleur = color;
+                p->plateau[pos.y][pos.x].info.couleur = color;
                 return pos;
             }
-            
+
         }
-        
-        
+
     }
     return pos;
-    
+
 }
 
 int intMax(int* arr, int size)
@@ -80,7 +79,7 @@ int intMax(int* arr, int size)
             max_element = arr[i];
         }
     }
-    
+
     return max_element;
 }
 
@@ -96,9 +95,9 @@ void explore(plateau* p, int depth, int i, short color)
 
     // listing possible moves
     pion emptypawn;
-    
-    emptypawn.couleur = NONE;
-    
+
+    emptypawn.info.couleur = NONE;
+
     for(int i = 1; i < getPossibleMovesNumber(*p) + 1; ++i)
     {
         emptypawn.pos = getPossibleMoves(p, i, color);
@@ -120,7 +119,6 @@ void explore(plateau* p, int depth, int i, short color)
             explore(p, depth, i+1, RED);
         }
 
-        move(p, emptypawn);
     }
 
 
