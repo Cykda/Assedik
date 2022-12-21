@@ -12,5 +12,6 @@ algo: MinMax
 ## A faire
 
 - [X] Commencer Bob
-- [ ] Finir les cas de victoire
-- [ ] changer les int en short dans l'enum couleur
+- [X] Finir les cas de victoire
+- [X] changer les int en short dans l'enum couleur
+- [X] Faire la sauvegarde et le loading

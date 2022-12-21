@@ -34,7 +34,7 @@ position getRectCenter(SDL_Rect rectangle)
 // Circle
 void DrawCircle(SDL_Renderer * renderer, int x, int y, int r, Color color, Color baseColor)
 {
-    
+
     int radius = r;
     SDL_SetRenderDrawColor(renderer, color.R, color.G, color.B, color.A);
     for (int w = 0; w < radius * 2; w++)

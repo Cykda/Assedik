@@ -21,7 +21,7 @@ int getPossibleMovesNumber(plateau p)
 {
     
     int possibleMovesNumber = 0;
-    
+
     
     for(int i = 0; i < p.N; ++i)
     {
@@ -114,15 +114,21 @@ float get_heuristic_value(plateau* p)
 
 int explore(plateau* p, int depth, bool minimizing)
 {
-    if(depth <= 0 || check_win(*p, 3));
+
+    if(depth <= 0)
     {
-        return get_heuristic_value(p);
+        //printf("Hello World3\n");
+        int val = get_heuristic_value(p);
+        printf("SCORE: %d\n", val);
+        return val;
     }
 
     int value;
 
-    if(minimizing)
+    if(minimizing == true)
     {
+        printf("max\n");
+        //printf("Hello World2\n");
         value = -INFINITY;
 
         // listing possible moves
@@ -137,21 +143,22 @@ int explore(plateau* p, int depth, bool minimizing)
             if(emptypawn.pos.x == -1 && emptypawn.pos.y == -1)
             {
                 printf("Error At Pawn Place\n");
-                return;
+                return -1;
             }
 
 
 
 
             
-            printf("%d\n", value);
             value = fmax(value, explore(p, depth - 1, false));
+            //printf("MAXIMIZING: %d\n", value);
             move(p, emptypawn);
         }
 
     }
-    else
+    else if(minimizing == false)
     {
+        printf("min\n");
         // listing possible moves
         pion emptypawn;
         value = INFINITY;
@@ -164,20 +171,20 @@ int explore(plateau* p, int depth, bool minimizing)
             if(emptypawn.pos.x == -1 && emptypawn.pos.y == -1)
             {
                 printf("Error At Pawn Place\n");
-                return;
+                return -1;
             }
 
 
 
 
 
+            //printf("MINIMIZING: %d\n", value);
             value = fmin(value, explore(p, depth - 1, true));
-            printf("%d\n", value);
             move(p, emptypawn);
         }
   
     }
-    
+    //printf("Hello World\n");
     return value;
 
 

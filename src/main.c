@@ -10,6 +10,7 @@
 #include "../include/ui.h"
 #include "../include/SDL2/SDL.h"
 #include "../include/components.h"
+#include "gamesave.h"
 
 
 /*
@@ -220,26 +221,46 @@ int main(int argc, char** argv)
     
     
     int N = 10;
+    int CurrentPlayedColor = 0;
+
     
     plateau p;
     initPlateau(&p, N);
     
-    //showBoard(p);
+    
+    pion BufferPawn;
+    
+    BufferPawn.couleur = 1;
+    
+    for(int i = 0; i < p.N; ++i)
+    {
+        for(int j = 0; j < p.N; ++j)
+        {
+            BufferPawn.pos.x = j;
+            BufferPawn.pos.y = i;
+            p.plateau[i][j] = BufferPawn;
+        }
+    }
     
     
+    save_game(p, "test.txt", WHITE);
     
-    
+    plateau p2 = load_game("test.txt", &CurrentPlayedColor);
 
-    int inf = INFINITY;
+
+    printf("\n\n\nPrinting board characteristics:\n\n");
+    printf("p.N = %d\n", p2.N);
     
-    int result = explore(&p, 2, true);
-    
-    printf("\n\n");
-    printf("Resultat: %d\n", result);
-    printf("-inf: %d\n", -inf);
-    printf("inf: %d\n", inf);
-    
+    for(int i = 0; i < p2.N; ++i)
+    {
+        for(int j = 0; j < p2.N; ++j)
+        {
+            printf("%d ", p2.plateau[i][j]);
+        }
+        printf("\n");
+    }
     
     freeboard(&p);
+    freeboard(&p2);
     return 0;
 }
