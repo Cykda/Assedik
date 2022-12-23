@@ -13,9 +13,10 @@
 #include "gamesave.h"
 
 
-/*
+
 int main(int argc, char** argv)
 {
+    
     SDL_Init(SDL_INIT_VIDEO);
     
     SDL_Surface* window = NULL;
@@ -33,12 +34,15 @@ int main(int argc, char** argv)
         printf("Error while creating renderer\n");
         return 1;
     }
+
     
-    int N = 5;
-    int X = 100;
+    int N = 6;
+    int X = 2;
     plateau p;
     initPlateau(&p, N);
+    showBoard(p);
 
+    
     Color BaseColor = setColor(27, 163, 156, 255);
     pion pawn;
     pion pawn2;
@@ -48,7 +52,7 @@ int main(int argc, char** argv)
     pawn.couleur = RED;
     
     pawn2.pos.x = 3;
-    pawn2.pos.y = 4;
+    pawn2.pos.y = 3;
     pawn2.couleur = WHITE;
     
     move(&p, pawn);
@@ -69,7 +73,7 @@ int main(int argc, char** argv)
 
     bool launched = true;
     
-    
+
     while(launched)
     {
         SDL_Event event;
@@ -101,12 +105,14 @@ int main(int argc, char** argv)
         
         drawPawns(renderer, Wpawns, X, BaseColor, setColor(255, 255, 255, 255), false);
         drawPawns(renderer, Rpawns, X, BaseColor, setColor(255, 0, 0, 255), true);
+
         
         
         SDL_RenderPresent(renderer);
     }
     
     
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -117,7 +123,7 @@ int main(int argc, char** argv)
     free(Rpawns);
     return 0;
 }
-*/
+
 
 
 
@@ -215,52 +221,44 @@ int main(int argc, char** argv)
 }
 */
 
-
+/*
 int main(int argc, char** argv)
 {
     
     
     int N = 10;
-    int CurrentPlayedColor = 0;
-
-    
     plateau p;
+    plateau p2;
+    
     initPlateau(&p, N);
+    initPlateau(&p2, N);
     
+    pion pawn;
     
-    pion BufferPawn;
+    showBoard(p);
     
-    BufferPawn.couleur = 1;
-    
-    for(int i = 0; i < p.N; ++i)
+    while(check_win(p, 4))
     {
-        for(int j = 0; j < p.N; ++j)
+        pawn = inputPawn("Entrez la couleur >>> ", "Entrez la position (x, y) >>> ");
+        if(pawn.pos.x < 0 && pawn.pos.y < 0)
         {
-            BufferPawn.pos.x = j;
-            BufferPawn.pos.y = i;
-            p.plateau[i][j] = BufferPawn;
+            break;
         }
+        move(&p, pawn);
+        copyBoard(p, &p2);
+        explore(&p2, 3, true);
+        
+        printf("\n\n");
+        showBoard(p);
+        printf("\n\n");
+        
     }
     
-    
-    save_game(p, "test.txt", WHITE);
-    
-    plateau p2 = load_game("test.txt", &CurrentPlayedColor);
-
-
-    printf("\n\n\nPrinting board characteristics:\n\n");
-    printf("p.N = %d\n", p2.N);
-    
-    for(int i = 0; i < p2.N; ++i)
-    {
-        for(int j = 0; j < p2.N; ++j)
-        {
-            printf("%d ", p2.plateau[i][j]);
-        }
-        printf("\n");
-    }
+    printf("Game Terminated\n");
     
     freeboard(&p);
     freeboard(&p2);
     return 0;
 }
+
+*/

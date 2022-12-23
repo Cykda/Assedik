@@ -109,6 +109,15 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
                 color = 0;
             }
         }
+        
+
+        if(p.N % 2 == 0)
+        {
+            color = !color;
+        }
+
+        
+        
     }
     
     rect = Baserect;
