@@ -9,18 +9,37 @@
 #include "../include/ui.h"
 #include "../include/SDL2/SDL.h"
 #include "../include/components.h"
-
+#include "../include/SDL2/SDL_ttf.h"
 
 
 int main(int argc, char** argv)
 {
-    SDL_Init(SDL_INIT_VIDEO);
-    
+    /* mise en place de la SDL et du TTF */
+
     SDL_Surface* window = NULL;
     SDL_Renderer* renderer = NULL;
-    window = SDL_CreateWindow("Hello World !", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    SDL_Init(SDL_INIT_VIDEO);
+
+    // Creation fenetre et rendu
+    window = SDL_CreateWindow("Teeko", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 720, 480, SDL_WINDOW_RESIZABLE);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
+    TTF_Init();
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY,"1");
+
+    // Chargement de la police
+    TTF_Font* Sans = TTF_OpenFont("assets\\Inconsolata\\Inconsolata-VariableFont_wdth,wght.ttf", 12);
+
+    // Texte en gras
+    TTF_SetFontStyle(Sans, TTF_STYLE_BOLD);
+
+    if (Sans == NULL){
+        printf("Error while importing typeface \n");
+        return 4;
+    }
+
+    // Verifications du fonctionnement
     if(window == NULL)
     {
         printf("Error while creating window\n");
@@ -31,29 +50,64 @@ int main(int argc, char** argv)
         printf("Error while creating renderer\n");
         return 1;
     }
-    
-    int N = 5;
-    int X = 10;
-    plateau p;
-    initPlateau(&p, N);
-    
-    Color BaseColor = setColor(27, 163, 156, 255);
-    pion pawn;
-    pion pawn2;
-    
-    pawn.pos.x = 0;
-    pawn.pos.y = 0;
-    pawn.couleur = RED;
-    
-    pawn2.pos.x = 3;
-    pawn2.pos.y = 4;
-    pawn2.couleur = WHITE;
-    
-    move(&p, pawn);
-    move(&p, pawn2);
-    showBoard(p);
 
-    
+    SDL_Color Black = {0, 0, 0, 0};
+    Color BaseColor = setColor(46, 83, 76, 255); // couleur du background
+
+    /* Variables de base */
+    plateau p;
+    pion pawn;
+    int N; // taille de la grille
+    int P;// Nombre de pions
+    int X;// Nombre d'alignement nécéssaire
+    int NBB,NBR; //Nombre de pions restants à placer
+    int Phase; //Phase actuelle du jeu (1 ou 2)
+    int *pNBB, *pNBR;//Pointeurs sur les variables NBB et NBR
+    int tour;//Variable qui sait quel joueur doit jouer
+    int reponse_RED,reponse_WHITE;//Variable qui voit si le joueur choisit de déplacer le pion ou d'utiliser le coup spécial
+
+    /* début du programme sans interface graphique */
+    do {
+        printf("\nTaille de la grille souhaitee (entier, minimim 3 cases): \n");
+        scanf("%d",&N);
+        fflush(stdin);
+    }while (N<3);
+
+    do {
+        printf("\nNombre de pions souhaites (entier, plus petit que la taille du plateau): \n");
+        scanf("%d",&P);
+        fflush(stdin);
+    } while (P>N || P<2);
+    NBB=P;
+    NBR=P;
+    pNBB=&NBB;
+    pNBR=&NBR;
+    do {
+        printf("\nNombre de pions a aligner pour gagner (entier, inferieur ou egal au nombre de pions par joueur) \n");
+        scanf("%d",&X);
+        fflush(stdin);
+    } while (X>P);
+    do {
+        printf("\nJoueur qui doit commencer (1: rouge ou 0: blanc): \n");
+        scanf("%d",&tour);
+        fflush(stdin);
+    } while (tour!=1 && tour!=0);
+
+
+    // creation de la surface des textes
+    SDL_Surface* surface_nb_pions1 = TTF_RenderText_Blended(Sans, "10", Black);
+    SDL_Surface* surface_nb_pions2 = TTF_RenderText_Blended(Sans, "10", Black);
+    SDL_Surface* surface_sauv= TTF_RenderText_Blended(Sans, "| sauvegarder",Black );
+    SDL_Surface* surface_part= TTF_RenderText_Blended(Sans, "reprendre la partie precedente",Black );
+
+    // conversion en texture
+    SDL_Texture* nb_pawnsW = SDL_CreateTextureFromSurface(renderer, surface_nb_pions1);
+    SDL_Texture* nb_pawnsR = SDL_CreateTextureFromSurface(renderer, surface_nb_pions2);
+    SDL_Texture* sauv = SDL_CreateTextureFromSurface(renderer, surface_sauv);
+    SDL_Texture* previous = SDL_CreateTextureFromSurface(renderer, surface_part);
+
+    initPlateau(&p, N);
+
     SDL_Rect rect;
     rect.x = 10;
     rect.y = 10;
@@ -63,28 +117,109 @@ int main(int argc, char** argv)
     SDL_Rect boardRect;
 
     GraphicalPawns* Wpawns = initGPawns(X, setPosition(0, 0), 50);
-    GraphicalPawns* Rpawns = initGPawns(X, setPosition(0, 0), 50);
+    GraphicalPawns* Rpawns = initGPawns(X, setPosition(0, 1), 50);
 
-    bool launched = true;
-    
-    
+    SDL_bool launched = SDL_TRUE;
+
+    Phase = 1;
+
     while(launched)
     {
         SDL_Event event;
         
         while(SDL_PollEvent(&event))
         {
-            if(event.type == SDL_QUIT)
-            {
-                launched = false;
-                break;
+            switch(event.type) {
+                case SDL_MOUSEBUTTONDOWN:
+
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+
+                        SDL_RenderClear(renderer);
+
+                        int w, h;
+                        SDL_GetRendererOutputSize(renderer, &w, &h);
+
+                        int x = event.button.x, y = event.button.y;
+
+                        while (Phase == 1) {
+                            if (tour == 1) // tour du joueur rouge
+                            {
+                                DrawCircle(renderer, 3 * w / 4 + 50, h / 2, 60, setColor(199, 207, 0, 255), BaseColor);
+
+                                if (isMouseInBoard(rect, N)) {
+                                    pion pawn;
+                                    pawn.pos.x = x - w / 2;
+                                    pawn.pos.y = y - h / 2;
+                                    pawn.info.couleur = tour;
+                                }
+                            }
+                            if (tour == 0) {
+                                DrawCircle(renderer, w / 4 - 50, h / 2, 60, setColor(199, 207, 0, 255), BaseColor);
+
+                                if (isMouseInBoard(boardRect, N)) {
+                                    pion pawn;
+                                    pawn.pos.x = x - w / 2;
+                                    pawn.pos.y = y - h / 2;
+                                    pawn.info.couleur = tour;
+                                }
+                            }
+
+                            if (pawn.info.couleur == 1) {
+                                pawn.info.quantite = NBR;
+                            }
+                            if (pawn.info.couleur == 0) {
+                                pawn.info.quantite = NBB;
+                            }
+
+
+                            if (p.plateau[pawn.pos.y][pawn.pos.x].info.couleur != -1) {
+                                printf("\nposition non valide : Case deja occupee par un autre pion\n");
+                                continue;
+                            }
+
+                            placement(&p, pawn, pNBB, pNBR);
+
+                            if (tour == 1) {
+                                tour = 0;
+                            } else if (tour == 0) {
+                                tour = 1;
+                            }
+
+                            int state = check_win(p, X);
+                            if (state == RED) {
+                                showBoard(p);
+                                printf("\nLe joueur rouge a gagne\n");
+                                break;
+                            } else if (state == WHITE) {
+                                showBoard(p);
+                                printf("\nLe joueur blanc a gagne\n");
+                                break;
+                            }
+
+                            printf("\n");
+                            showBoard(p);
+
+                            if (NBB <= 0 && NBR <= 0) {
+                                printf("\n\nFelicitation, tout les pions sont places. La phase 1 est donc terminee. Comme personne n'a gagné suite a cette phase, on peut passer a la phase 2\n\n");
+                                Phase = 2;
+                            }
+
+
+                        }
+
+                    }
+                    break;
+
+                case SDL_QUIT:
+                    launched = SDL_FALSE;
+                    break;
+
+                default:
+                    break;
+                }
             }
-            else if(event.type == SDL_MOUSEBUTTONDOWN)
-            {
-                printf("%d %d %d %d || %d\n", boardRect.x, boardRect.y, boardRect.w, boardRect.h, isMouseInBoard(boardRect, N));
-            }
+
         }
-        int color = 0;
         
         SDL_RenderClear(renderer);
         /*
@@ -95,16 +230,57 @@ int main(int argc, char** argv)
         */
         drawBoard(renderer, rect, p, setColor(249, 232, 204, 255)
             , setColor(210, 176, 151, 255), BaseColor, BOARD_CENTERED, &boardRect);
-            
-        
-        drawPawns(renderer, Wpawns, X, BaseColor, setColor(255, 255, 255, 255), false);
-        drawPawns(renderer, Rpawns, X, BaseColor, setColor(255, 0, 0, 255), true);
-        
-        
+
+        int w, h;
+        SDL_GetRendererOutputSize(renderer, &w, &h);
+
+        // emplacement texte
+
+        SDL_Rect Pawns1_rect;
+        Pawns1_rect.x = w/4 - 70;
+        Pawns1_rect.y = h/2 - 25;
+        Pawns1_rect.w = 40;
+        Pawns1_rect.h = 48;
+
+        SDL_Rect Pawns2_rect;
+        Pawns2_rect.x = (3*w)/4 +30;
+        Pawns2_rect.y = h/2 - 25;
+        Pawns2_rect.w = 40;
+        Pawns2_rect.h = 48;
+
+        SDL_Rect Sauv_rect;
+        Sauv_rect.x = w/2+3;
+        Sauv_rect.y = h-50;
+        Sauv_rect.w = 126;
+        Sauv_rect.h = 40;
+
+        SDL_Rect Previous_rect;
+        Previous_rect.x = w/2-291;
+        Previous_rect.y = h-50;
+        Previous_rect.w = 290;
+        Previous_rect.h = 40;
+
+        // Dessin des cercles qui constituent la pioche
+
+        DrawCircle(renderer, w/4 -50, h/2, 50,setColor(255, 255, 255, 255), BaseColor);
+        DrawCircle(renderer, (3*w)/4 +50, h/2, 50,setColor(255, 0, 0, 255), BaseColor);
+
+
+        SDL_RenderCopy(renderer, nb_pawnsR, NULL, &Pawns1_rect);
+        SDL_RenderCopy(renderer, nb_pawnsW, NULL, &Pawns2_rect);
+        SDL_RenderCopy(renderer, sauv, NULL, &Sauv_rect);
+        SDL_RenderCopy(renderer, previous, NULL, &Previous_rect);
         SDL_RenderPresent(renderer);
     }
-    
-    
+
+    SDL_FreeSurface(surface_nb_pions1);
+    SDL_FreeSurface(surface_nb_pions2);
+    SDL_FreeSurface(surface_part);
+    SDL_FreeSurface(surface_sauv);
+    SDL_DestroyTexture(nb_pawnsR);
+    SDL_DestroyTexture(nb_pawnsW);
+    TTF_Quit();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -113,103 +289,5 @@ int main(int argc, char** argv)
     freeborad(&p);
     free(Wpawns);
     free(Rpawns);
-    return 0;
+    return EXIT_SUCCESS;
 }
-
-
-
-
-
-/*
-int main(int argc, char** argv)
-{
-    printf("\n");
-    plateau p;
-    pion pawn;
-
-    int N = 10; // taille de la grille
-    //int P;// Nombre de pions
-    int X = 3;// Nombre d'alignement nécéssaire
-
-
-    printf("\nDonnez la taille souhaitee pour a grille (entier) \n");
-    scanf("%d",&N);
-    fflush(stdin);
-    do {
-        printf("\nDonnez le nombre de pions souhaites (plus petit que la taile du plateau) (entier) \n");
-        scanf("%d",&P);
-        fflush(stdin);
-    } while (P>N);
-    do {
-        printf("\nDonnez le nombre de pions a alligner pour gagner (plus petit ou egal au nombre de pions par joueur) (entier) \n");
-        scanf("%d",&X);
-        fflush(stdin);
-    } while (X>P);
-
-    initPlateau(&p, N);
-    showBoard(p);
-
-    printf("\n");
-
-
-    int N = 10;
-    int X = 5;
-
-
-    initPlateau(&p, N);
-    showBoard(p);
-
-
-
-
-
-    while(true)
-    {
-
-        pawn = inputPawn("Choisissez la couleur (1: rouge, 0: blanc, -2: quitter le programme): ",
-            "Choisissez la position (X, Y): ");
-
-
-        if(pawn.couleur == -2)
-        {
-            break;
-        }
-
-        if(pawn.pos.x < 0 || pawn.pos.x > (N - 1) || pawn.pos.y < 0 || pawn.pos.y > (N - 1))
-        {
-            printf("position non valide\n");
-            continue;
-        }
-
-        if(pawn.couleur != 1 && pawn.couleur != 0 && pawn.couleur != -2)
-        {
-            printf("Erreur de saisie de couleur\n");
-            continue;
-        }
-
-
-
-        move(&p, pawn);
-
-        int state = check_win(p, X);
-        if(state == RED)
-        {
-            printf("\nLe joueur rouge a gagne\n");
-            break;
-        }
-        else if(state == WHITE)
-        {
-            printf("\nLe joueur blanc a gagne\n");
-            break;
-        }
-
-        printf("\n");
-        showBoard(p);
-    }
-
-
-    printf("\nFin du programme");
-    freeborad(&p);
-    return 0;
-}
-*/
