@@ -63,14 +63,14 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
 {
 
     bool color = 0;
-    
+
     int w, h;
-    
+
     SDL_GetRendererOutputSize(renderer, &w, &h);
-    
+
     w = (w / 2) - (Baserect.w * p.N / 2);
     h = (h / 2) - (Baserect.h * p.N / 2);
-    
+
     if(BoardRect != NULL)
     {
         BoardRect->x = Baserect.x + w;
@@ -78,11 +78,11 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
         BoardRect->w = Baserect.w * p.N;
         BoardRect->h = Baserect.h * p.N;
     }
-    
-    
-    
-    
-    SDL_Rect rect = Baserect;    
+
+
+
+
+    SDL_Rect rect = Baserect;
     for(int i = 0; i < p.N; ++i)
     {
         for(int j = 0; j < p.N; ++j)
@@ -97,7 +97,7 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
                 rect.x = rect.w * j;
                 rect.y = rect.h * i;
             }
-            
+
             if(color == 0)
             {
                 drawRectangle(renderer, &rect, c1, base);
@@ -109,10 +109,19 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
                 color = 0;
             }
         }
+
+
+        if(p.N % 2 == 0)
+        {
+            color = !color;
+        }
+
+
+
     }
-    
+
     rect = Baserect;
-    
+
     for(int i = 0; i < p.N; ++i)
     {
         for(int j = 0; j < p.N; ++j)
@@ -121,31 +130,31 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
             {
                 rect.x = rect.w * (j - 1) + (rect.w / 2) + w;
                 rect.y = rect.h * (i - 1) + (rect.h / 2) + h;
-                
+
             }
             else
             {
                 rect.x = rect.w * (j - 1) + (rect.w / 2);
-                rect.y = rect.h * (i - 1) + (rect.h / 2);              
+                rect.y = rect.h * (i - 1) + (rect.h / 2);
             }
-            
-            
+
+
             position pos;
             pos.x = rect.x + rect.w;
             pos.y = rect.y + rect.h;
-            if(p.plateau[i][j].couleur == RED)
+            if(p.plateau[i][j].info.couleur == RED)
             {
                 DrawCircle(renderer, pos.x, pos.y, rect.h / 2, setColor(255, 0, 0, 255), base);
             }
-            else if(p.plateau[i][j].couleur == WHITE)
+            else if(p.plateau[i][j].info.couleur == WHITE)
             {
                 DrawCircle(renderer, pos.x, pos.y, rect.w / 2, setColor(255, 255, 255, 255), base);
             }
-            
-            
+
+
         }
     }
-    
-    
+
+
 }
 
