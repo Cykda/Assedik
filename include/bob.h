@@ -8,13 +8,18 @@
 
 
 
+
+
 void copyBoard(plateau p, plateau* p2);
 
-int getPossibleMovesNumber(plateau p);
-int getPossibilityNumber(plateau p);
-position getPossibleMoves(plateau* p, int MoveNumber, short color);
-int intMax(int* arr, int size);
-int getBoardScore(plateau p, short color);
-float get_heuristic_value(plateau* p);
-int explore(plateau* p, int depth, bool minimizing);
+
+position getRandomMove(plateau p);
+int endGame(plateau* p, int X, int CurrentPawnNumber);
+bool checkBoardEmpty(plateau p);
+position Monte_Carlo(plateau *p, int X, int CurrentPawnNumber, int interation);
+
+
+
+
+
 #endif /*BOB_H*/

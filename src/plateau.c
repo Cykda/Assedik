@@ -77,11 +77,11 @@ void showBoard(plateau p)
                 printf("%d    ", i);
             }
 
-            if(p.plateau[i][j].couleur == 1)
+            if(p.plateau[i][j].couleur == RED)
             {
                 printf("| R ");
             }
-            else if(p.plateau[i][j].couleur == 0)
+            else if(p.plateau[i][j].couleur == WHITE)
             {
                 printf("| B ");
             }

@@ -4,6 +4,9 @@
 
 #include "plateau.h"
 
+
+
+
 int check_win(plateau p, int X);
 
 

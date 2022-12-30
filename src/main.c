@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <time.h>
 #include "../include/plateau.h"
 #include "../include/moves.h"
 #include "../include/rules.h"
@@ -10,7 +11,7 @@
 #include "../include/ui.h"
 #include "../include/SDL2/SDL.h"
 #include "../include/components.h"
-#include "gamesave.h"
+
 
 
 
@@ -21,7 +22,7 @@ int main(int argc, char** argv)
     
     SDL_Surface* window = NULL;
     SDL_Renderer* renderer = NULL;
-    window = SDL_CreateWindow("Hello World !", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    window = SDL_CreateWindow("Hello World !", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1536, 793, SDL_WINDOW_RESIZABLE);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
     if(window == NULL)
@@ -87,7 +88,7 @@ int main(int argc, char** argv)
             }
             else if(event.type == SDL_MOUSEBUTTONDOWN)
             {
-                printf("%d %d %d %d || %d\n", boardRect.x, boardRect.y, boardRect.w, boardRect.h, isMouseInBoard(boardRect, N));
+                //printf("%d %d %d %d || %d\n", boardRect.x, boardRect.y, boardRect.w, boardRect.h, isMouseInBoard(boardRect, N));
             }
         }
         int color = 0;
@@ -98,9 +99,11 @@ int main(int argc, char** argv)
         // R: 210 G: 176 B: 151
        
 
-
-        drawBoard(renderer, rect, p, setColor(249, 232, 204, 255)
-            , setColor(210, 176, 151, 255), BaseColor, BOARD_CENTERED, &boardRect);
+        
+        
+        
+        drawBoard(renderer, setPosition(55, 55), p, setColor(249, 232, 204, 255)
+            , setColor(210, 176, 151, 255), BaseColor, BOARD_CENTERED, &boardRect, 720, 720);
             
         
         drawPawns(renderer, Wpawns, X, BaseColor, setColor(255, 255, 255, 255), false);
@@ -123,6 +126,7 @@ int main(int argc, char** argv)
     free(Rpawns);
     return 0;
 }
+
 
 
 
@@ -225,40 +229,52 @@ int main(int argc, char** argv)
 int main(int argc, char** argv)
 {
     
+    srand(time(NULL));
     
-    int N = 10;
+    
+    int N = 5;
+    int X = 4;
     plateau p;
-    plateau p2;
+
     
     initPlateau(&p, N);
-    initPlateau(&p2, N);
+
     
     pion pawn;
+
     
     showBoard(p);
-    
-    while(check_win(p, 4))
+
+
+    while(true)
     {
+        
         pawn = inputPawn("Entrez la couleur >>> ", "Entrez la position (x, y) >>> ");
         if(pawn.pos.x < 0 && pawn.pos.y < 0)
         {
             break;
         }
-        move(&p, pawn);
-        copyBoard(p, &p2);
-        explore(&p2, 3, true);
         
+        move(&p, pawn);
+        
+
+        
+        position pos = Monte_Carlo(&p, X, 10, 10000);
+        printf("%d %d\n", pos.x, pos.y);
+        directMove(&p, RED, pos.x, pos.y);
+
+        
+
         printf("\n\n");
         showBoard(p);
-        printf("\n\n");
-        
+
+        //printf("%d %d\n", pos.x, pos.y);
     }
-    
+
     printf("Game Terminated\n");
     
     freeboard(&p);
-    freeboard(&p2);
+
     return 0;
 }
-
 */

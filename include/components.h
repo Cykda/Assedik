@@ -7,6 +7,7 @@
 // Generals
 
 #define BOARD_CENTERED 1
+#define NO_BOARD_FLAG -1
 
 
 typedef struct Color Color;
@@ -33,8 +34,8 @@ void DrawCircle(SDL_Renderer * renderer, int x, int y, int r, Color color, Color
 
 // plateau
 
-void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, 
-    Color c1, Color c2, Color base, short flag, SDL_Rect* BoardRect);
+void drawBoard(SDL_Renderer* renderer, position pos, plateau p, Color c1, Color c2, Color base, 
+    short flag, SDL_Rect* BoardRect, int width, int height);
 
 
 //utils

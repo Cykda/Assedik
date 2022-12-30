@@ -1,6 +1,7 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <time.h>
 #include "../include/bob.h"
 
 
@@ -17,178 +18,150 @@ void copyBoard(plateau p, plateau* p2)
     }
 }
 
-int getPossibleMovesNumber(plateau p)
+position getRandomMove(plateau p)
 {
     
-    int possibleMovesNumber = 0;
+    position pos;
+
+    if(!checkBoardEmpty(p))
+    {
+        pos.x = -1;
+        pos.y = -1;
+        return pos;
+    }
 
     
+    do
+    {
+        pos.x = rand() % p.N;
+        pos.y = rand() % p.N;      
+    } while (p.plateau[pos.y][pos.x].couleur != NONE);
+    
+    return pos;
+    
+}
+
+
+bool checkBoardEmpty(plateau p)
+{
     for(int i = 0; i < p.N; ++i)
     {
         for(int j = 0; j < p.N; ++j)
         {
             if(p.plateau[i][j].couleur == NONE)
             {
-                possibleMovesNumber++;          
+                return true;
             }
         }
     }
     
-    return possibleMovesNumber;
+    return false;
+    
 }
 
-position getPossibleMoves(plateau* p, int MoveNumber, short color)
+
+int endGame(plateau *p, int X, int CurrentPawnNumber)
+{
+
+    int PawnNumber = CurrentPawnNumber;
+    long SecurityIndex = 0;
+    while(true)
+    {
+
+
+        
+        position pos = getRandomMove(*p);
+        if(pos.x < 0 && pos.y < 0)
+        {
+            return 0;
+        }
+
+        directMove(p, WHITE, pos.x, pos.y);
+        
+        pos = getRandomMove(*p);
+        if(pos.x < 0 && pos.y < 0)
+        {
+            return 0;
+        }
+
+
+        directMove(p, RED, pos.x, pos.y);
+
+        if(check_win(*p, X) == RED || PawnNumber <= 0)
+        {
+            return 0;
+        }
+        else if(check_win(*p, X) == WHITE)
+        {
+            return 1;
+        }
+        
+        //printf("SecurityIndex: %d\n", SecurityIndex);
+        
+        PawnNumber--;
+        SecurityIndex++;
+
+
+    }
+    
+    
+    
+}
+
+
+
+position Monte_Carlo(plateau *p, int X, int CurrentPawnNumber, int interation)
 {
     
+    int maxScore = -INFINITY;
+    int score = 0;
+    int index = 0;
     
-
-    int CurrentMove = MoveNumber;
     position pos;
-    pos.x = -1;
-    pos.y = -1;
+    
+    
+    plateau p2;
+    initPlateau(&p2, p->N);
+    copyBoard(*p, &p2);
     
     for(int i = 0; i < p->N; ++i)
     {
         for(int j = 0; j < p->N; ++j)
         {
+            printf("AI %%: %f\n", (float)(100.f * ((float)index / ((float)p->N * (float)p->N))));
             if(p->plateau[i][j].couleur == NONE)
             {
-                CurrentMove--;
+                directMove(&p2, RED, j, i);
+                score = 0;
+                for(int k = 0; k < interation; ++k)
+                {
+                    score += endGame(&p2, X, CurrentPawnNumber);
+                    copyBoard(*p, &p2);
+                }
+                
+                if(score > maxScore)
+                {
+                    maxScore = score;
+                    pos.x = j;
+                    pos.y = i;
+                }
+                directMove(&p2, NONE, j, i);       
             }
-            if(CurrentMove <= 0)
-            {
-                pos.x = j;
-                pos.y = i;
-                p->plateau[pos.y][pos.x].couleur = color;
-                return pos;
-            }
-            
+            index++;
         }
-        
-        
     }
+    printf("AI %%: %f\n", (float)(100.f * ((float)index / ((float)p->N * (float)p->N))));
+    
+    freeboard(&p2);
+    
+        
     return pos;
     
-}
-
-int intMax(int* arr, int size)
-{
-    int max_element = arr[0];
-    for(int i = 0; i < size; ++i)
-    {
-        if(arr[i] > max_element)
-        {
-            max_element = arr[i];
-        }
-    }
     
-    return max_element;
 }
 
 
-int getBoardScore(plateau p, short color)
-{
-    
-    int score = 0;
-    
-    
-    for(int i = 0; i < p.N; ++i)
-    {
-        for(int j = 0; j < p.N; ++j)
-        {
-            if(p.plateau[i][j].couleur == color)
-            {
-                score++;
-            }
-            
-        }
-    }
-    
-    return score;
-}
-
-float get_heuristic_value(plateau* p)
-{
-    return (float)getBoardScore(*p, RED) / (float)getBoardScore(*p, WHITE);
-}
-
-int explore(plateau* p, int depth, bool minimizing)
-{
-
-    if(depth <= 0)
-    {
-        //printf("Hello World3\n");
-        int val = get_heuristic_value(p);
-        printf("SCORE: %d\n", val);
-        return val;
-    }
-
-    int value;
-
-    if(minimizing == true)
-    {
-        printf("max\n");
-        //printf("Hello World2\n");
-        value = -INFINITY;
-
-        // listing possible moves
-        pion emptypawn;
-        
-        emptypawn.couleur = NONE;
-        
-        for(int i = 1; i < getPossibleMovesNumber(*p) + 1; ++i)
-        {
-            emptypawn.pos = getPossibleMoves(p, i, RED);
-
-            if(emptypawn.pos.x == -1 && emptypawn.pos.y == -1)
-            {
-                printf("Error At Pawn Place\n");
-                return -1;
-            }
 
 
 
 
-            
-            value = fmax(value, explore(p, depth - 1, false));
-            //printf("MAXIMIZING: %d\n", value);
-            move(p, emptypawn);
-        }
-
-    }
-    else if(minimizing == false)
-    {
-        printf("min\n");
-        // listing possible moves
-        pion emptypawn;
-        value = INFINITY;
-        emptypawn.couleur = NONE;
-        
-        for(int i = 1; i < getPossibleMovesNumber(*p) + 1; ++i)
-        {
-            emptypawn.pos = getPossibleMoves(p, i, WHITE);
-
-            if(emptypawn.pos.x == -1 && emptypawn.pos.y == -1)
-            {
-                printf("Error At Pawn Place\n");
-                return -1;
-            }
-
-
-
-
-
-            //printf("MINIMIZING: %d\n", value);
-            value = fmin(value, explore(p, depth - 1, true));
-            move(p, emptypawn);
-        }
-  
-    }
-    //printf("Hello World\n");
-    return value;
-
-
-
-    
-
-}

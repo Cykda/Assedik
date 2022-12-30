@@ -59,53 +59,63 @@ void DrawCircle(SDL_Renderer * renderer, int x, int y, int r, Color color, Color
 
 
 // Plateau
-void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, Color c2, Color base, short flag, SDL_Rect* BoardRect)
+void drawBoard(SDL_Renderer* renderer, position pos, plateau p, Color c1, Color c2, Color base, 
+    short flag, SDL_Rect* BoardRect, int width, int height)
 {
 
     bool color = 0;
     
-    int w, h;
+
+    int ScreenWidth, ScreenHeight;
     
-    SDL_GetRendererOutputSize(renderer, &w, &h);
+    SDL_GetRendererOutputSize(renderer, &ScreenWidth, &ScreenHeight);
     
-    w = (w / 2) - (Baserect.w * p.N / 2);
-    h = (h / 2) - (Baserect.h * p.N / 2);
+    position NewPos;
     
-    if(BoardRect != NULL)
+    
+    int w = width / p.N;
+    int h = height / p.N;
+    position CenterPos;
+    
+    
+    if(flag == BOARD_CENTERED)
     {
-        BoardRect->x = Baserect.x + w;
-        BoardRect->y = Baserect.y + h;
-        BoardRect->w = Baserect.w * p.N;
-        BoardRect->h = Baserect.h * p.N;
+        CenterPos.x = (ScreenWidth / 2) - (width / 2);
+        CenterPos.y = (ScreenHeight / 2) - (height / 2);
     }
+    else
+    {
+        CenterPos = pos;
+    }
+
     
-    
-    
-    
-    SDL_Rect rect = Baserect;    
+
+    SDL_Rect BufferRect;
+    BufferRect.w = w;
+    BufferRect.h = h;
+            
+  
     for(int i = 0; i < p.N; ++i)
     {
         for(int j = 0; j < p.N; ++j)
         {
-            if(flag == BOARD_CENTERED)
-            {
-                rect.x = rect.w * j + w;
-                rect.y = rect.h * i + h;
-            }
-            else
-            {
-                rect.x = rect.w * j;
-                rect.y = rect.h * i;
-            }
+
+            NewPos.x = CenterPos.x + w * j;
+            NewPos.y = CenterPos.y + h * i;
+
+  
+            BufferRect.x = NewPos.x;
+            BufferRect.y = NewPos.y;
             
+ 
             if(color == 0)
             {
-                drawRectangle(renderer, &rect, c1, base);
+                drawRectangle(renderer, &BufferRect, c1, base);
                 color = 1;
             }
             else
             {
-                drawRectangle(renderer, &rect, c2, base);
+                drawRectangle(renderer, &BufferRect, c2, base);
                 color = 0;
             }
         }
@@ -115,40 +125,41 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
         {
             color = !color;
         }
-
-        
-        
     }
     
-    rect = Baserect;
+    
+    BufferRect.x = 0;
+    BufferRect.y = 0;
+    BufferRect.w = w;
+    BufferRect.h = h;
     
     for(int i = 0; i < p.N; ++i)
     {
         for(int j = 0; j < p.N; ++j)
         {
-            if(BOARD_CENTERED)
+            if(flag == BOARD_CENTERED)
             {
-                rect.x = rect.w * (j - 1) + (rect.w / 2) + w;
-                rect.y = rect.h * (i - 1) + (rect.h / 2) + h;
+                BufferRect.x = BufferRect.w * (j - 1) + (BufferRect.w / 2) + w;
+                BufferRect.y = BufferRect.h * (i - 1) + (BufferRect.h / 2) + h;
                 
             }
             else
             {
-                rect.x = rect.w * (j - 1) + (rect.w / 2);
-                rect.y = rect.h * (i - 1) + (rect.h / 2);              
+                BufferRect.x = BufferRect.w * (j - 1) + (BufferRect.w / 2);
+                BufferRect.y = BufferRect.h * (i - 1) + (BufferRect.h / 2);              
             }
             
             
-            position pos;
-            pos.x = rect.x + rect.w;
-            pos.y = rect.y + rect.h;
+            position po;
+            po.x = BufferRect.x + BufferRect.w;
+            po.y = BufferRect.y + BufferRect.h;
             if(p.plateau[i][j].couleur == RED)
             {
-                DrawCircle(renderer, pos.x, pos.y, rect.h / 2, setColor(255, 0, 0, 255), base);
+                DrawCircle(renderer, pos.x, pos.y, BufferRect.h / 2, setColor(255, 0, 0, 255), base);
             }
             else if(p.plateau[i][j].couleur == WHITE)
             {
-                DrawCircle(renderer, pos.x, pos.y, rect.w / 2, setColor(255, 255, 255, 255), base);
+                DrawCircle(renderer, pos.x, pos.y, BufferRect.w / 2, setColor(255, 255, 255, 255), base);
             }
             
             

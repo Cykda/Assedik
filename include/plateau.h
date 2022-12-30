@@ -7,8 +7,8 @@ typedef enum couleurs couleurs;
 enum couleurs
 {
     RED = 1,
-    WHITE = 0,
-    NONE = -1
+    WHITE = -1,
+    NONE = 0
 };
 
 typedef struct position position;
