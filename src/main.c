@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     SDL_Init(SDL_INIT_VIDEO);
 
     // Creation fenetre et rendu
-    window = SDL_CreateWindow("Teeko", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 720, 480, SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow("Teeko", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 780, 0);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
     TTF_Init();
@@ -134,34 +134,39 @@ int main(int argc, char** argv)
 
                     if (event.button.button == SDL_BUTTON_LEFT) {
 
-                        SDL_RenderClear(renderer);
+                        //SDL_RenderClear(renderer);
 
                         int w, h;
                         SDL_GetRendererOutputSize(renderer, &w, &h);
 
                         int x = event.button.x, y = event.button.y;
-
                         while (Phase == 1) {
                             if (tour == 1) // tour du joueur rouge
                             {
-                                DrawCircle(renderer, 3 * w / 4 + 50, h / 2, 60, setColor(199, 207, 0, 255), BaseColor);
+                                //DrawCircle(renderer, 3 * w / 4 + 50, h / 2, 60, setColor(199, 207, 0, 255), BaseColor);
 
-                                if (isMouseInBoard(rect, N)) {
-                                    pion pawn;
-                                    pawn.pos.x = x - w / 2;
-                                    pawn.pos.y = y - h / 2;
-                                    pawn.info.couleur = tour;
-                                }
+                                //if (isMouseInBoard(boardRect, N)) {
+                                printf("case du j r");
+                                pion pawn;
+                                pawn.pos.x = ((x - w / 2)/N)-((x - w / 2)%N);
+                                printf("\n%i\n",pawn.pos.x);
+                                pawn.pos.y = (y - h / 2)/N;
+                                pawn.info.couleur = tour;
+                               // }
+                                break;
                             }
-                            if (tour == 0) {
+                            if (tour == 0) { // tour du joueur blanc
                                 DrawCircle(renderer, w / 4 - 50, h / 2, 60, setColor(199, 207, 0, 255), BaseColor);
 
                                 if (isMouseInBoard(boardRect, N)) {
+                                    printf("case du j blanc");
                                     pion pawn;
                                     pawn.pos.x = x - w / 2;
                                     pawn.pos.y = y - h / 2;
                                     pawn.info.couleur = tour;
+                                    printf("case du j blanc\n\n");
                                 }
+                                break;
                             }
 
                             if (pawn.info.couleur == 1) {
@@ -181,8 +186,10 @@ int main(int argc, char** argv)
 
                             if (tour == 1) {
                                 tour = 0;
+                                break;
                             } else if (tour == 0) {
                                 tour = 1;
+                                break;
                             }
 
                             int state = check_win(p, X);
@@ -197,7 +204,6 @@ int main(int argc, char** argv)
                             }
 
                             printf("\n");
-                            showBoard(p);
 
                             if (NBB <= 0 && NBR <= 0) {
                                 printf("\n\nFelicitation, tout les pions sont places. La phase 1 est donc terminee. Comme personne n'a gagné suite a cette phase, on peut passer a la phase 2\n\n");
@@ -216,7 +222,7 @@ int main(int argc, char** argv)
 
                 default:
                     break;
-                }
+
             }
 
         }
