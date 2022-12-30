@@ -1,6 +1,5 @@
 #include "../include/components.h"
 
-
 Color setColor(int R, int G, int B, int A)
 {
     Color c;
@@ -8,7 +7,7 @@ Color setColor(int R, int G, int B, int A)
     c.G = G;
     c.B = B;
     c.A = A;
-    
+
     return c;
 }
 
@@ -34,7 +33,7 @@ position getRectCenter(SDL_Rect rectangle)
 // Circle
 void DrawCircle(SDL_Renderer * renderer, int x, int y, int r, Color color, Color baseColor)
 {
-    
+
     int radius = r;
     SDL_SetRenderDrawColor(renderer, color.R, color.G, color.B, color.A);
     for (int w = 0; w < radius * 2; w++)
@@ -49,7 +48,7 @@ void DrawCircle(SDL_Renderer * renderer, int x, int y, int r, Color color, Color
             }
         }
     }
-    
+
     SDL_SetRenderDrawColor(renderer, baseColor.R, baseColor.G, baseColor.B, baseColor.A);
 }
 
@@ -79,10 +78,8 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
         BoardRect->h = Baserect.h * p.N;
     }
 
-
-
-
     SDL_Rect rect = Baserect;
+
     for(int i = 0; i < p.N; ++i)
     {
         for(int j = 0; j < p.N; ++j)
@@ -116,8 +113,6 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
             color = !color;
         }
 
-
-
     }
 
     rect = Baserect;
@@ -138,10 +133,10 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
                 rect.y = rect.h * (i - 1) + (rect.h / 2);
             }
 
-
             position pos;
             pos.x = rect.x + rect.w;
             pos.y = rect.y + rect.h;
+
             if(p.plateau[i][j].info.couleur == RED)
             {
                 DrawCircle(renderer, pos.x, pos.y, rect.h / 2, setColor(255, 0, 0, 255), base);
@@ -151,10 +146,6 @@ void drawBoard(SDL_Renderer* renderer, SDL_Rect Baserect, plateau p, Color c1, C
                 DrawCircle(renderer, pos.x, pos.y, rect.w / 2, setColor(255, 255, 255, 255), base);
             }
 
-
         }
     }
-
-
 }
-
