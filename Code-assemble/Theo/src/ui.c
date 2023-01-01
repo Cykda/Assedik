@@ -95,5 +95,6 @@ bool isMouseInBoard(SDL_Rect caseRect, int N)
     return false;
     
     
-    
+   
+ 
 }

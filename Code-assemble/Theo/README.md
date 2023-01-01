@@ -14,3 +14,7 @@ algo: MinMax
 - [X] Commencer Bob
 - [ ] Finir les cas de victoire
 - [X] changer les int en short dans l'enum couleur
+
+
+
+TOTAL: 1920 putain de lignes sa mère
