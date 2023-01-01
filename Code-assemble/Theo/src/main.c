@@ -10,6 +10,8 @@
 #include "../include/ui.h"
 #include "../include/SDL2/SDL.h"
 #include "../include/components.h"
+#include "../include/gamesave.h"
+
 
 
 
@@ -269,116 +271,3 @@ int main(int argc, char** argv)
 }
 
 
-/*
-int main(int argc, char** argv)
-{
-    
-    int N = 5; // Taille du plateau
-    int X = 7; // Nombre de pions a aligner
-    int P = 10; // Nombre de pions restants à chaque joueurs
-    short state = PHASE_DEPLACEMENT;
-    plateau p;
-    initPlateau(&p, N);
-    endGamePlacement(&p, X);
-    position deplacement;
-    position movement;
-    MonteCarlo mc;
-    
-    
-    showBoard(p);
-    
-    while(true)
-    {
-        if(check_win(p, X) != NONE)
-        {
-            break;
-        }
-        
-        if(state = PHASE_DEPLACEMENT)
-        {
-            
-        }
-        else if(state == PHASE_DEPLACEMENT)
-        {
-            
-            printf("Quel pion voulez vous deplacer (X, Y): ");
-            scanf("%d %d", &deplacement.x, &deplacement.y);
-            
-            if(deplacement.x < 0 || deplacement.y < 0)
-            {
-                break;
-            }
-            printf("Ou voulez vous le deplacer (X, Y): ");
-            scanf("%d %d", &movement.x, &movement.y);
-            
-            
-            
-            if(p.plateau[deplacement.y][deplacement.x].info.couleur == NONE)
-            {
-                printf("Erreur de saisie du pion\n");
-                continue;
-            }
-            
-            directMove(&p, NONE, deplacement.x, deplacement.y);
-            directMove(&p, WHITE, movement.x, movement.y);
-            
-            
-            
-            
-            mc = Monte_Carlo(&p, X, 1000, PHASE_DEPLACEMENT);
-            
-            directMove(&p, NONE, mc.pos_to_move.x, mc.pos_to_move.y);
-            directMove(&p, RED, mc.displacementPos.x, mc.displacementPos.y);
-            
-            
-        }
-        printf("\n\n");
-        showBoard(p);
-        
-    }
-    
-    
-    
-    
-    
-    printf("Game terminated\n");
-    
-    freeboard(&p);
-    return 0;
-}
-*/
-
-
-
-
-/*
-int main(int argc, char* argv)
-{
-    srand(time(NULL));
-    int N = 5;
-    int X = 3;
-    plateau p;
-    
-    initPlateau(&p, N);
-    
-    
-    
-    if(endGamePlacement(&p, X) != 0)
-    {
-        printf("Error: Someone win\n");
-        freeboard(&p);
-        return 1;
-    }
-    
-    showBoard(p);
-
-    MonteCarlo results = Monte_Carlo(&p, X, 1000, PHASE_DEPLACEMENT);
-    printf("FINI !\n");
-    
-    
-    printf("Resultats: \n\tPion a deplacer: %d %d\n\tEmplacement: %d %d\n", results.pos_to_move.x, results.pos_to_move.y, results.displacementPos.x, results.displacementPos.y);
-    
-    freeboard(&p);
-
-}
-*/
