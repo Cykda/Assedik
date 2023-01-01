@@ -58,36 +58,62 @@ bool checkBoardEmpty(plateau p)
     return false;
     
 }
+int countPawns(plateau p, short color)
+{
+    int pawnsCount = 0;
+    for(int i = 0; i < p.N; ++i)
+    {
+        for(int j = 0; j < p.N; ++j)
+        {
+            if(p.plateau[i][j].couleur == color)
+            {
+                pawnsCount++;
+            }
+        }
+    }
+    return pawnsCount;
+}
 
-
-int endGame(plateau *p, int X, int CurrentPawnNumber)
+int endGamePlacement(plateau *p, int X)
 {
 
-    int PawnNumber = CurrentPawnNumber;
-    long SecurityIndex = 0;
+    
+    int WhitePawnsNumber = X - countPawns(*p, WHITE);
+    int RedPawnNumber = X - countPawns(*p, RED);
+    position pos;
     while(true)
     {
 
 
-        
-        position pos = getRandomMove(*p);
-        if(pos.x < 0 && pos.y < 0)
+        if(WhitePawnsNumber > 0)
+        {
+            pos = getRandomMove(*p);
+            if(pos.x < 0 && pos.y < 0)
+            {
+                return 0;
+            }
+            directMove(p, WHITE, pos.x, pos.y);
+        }
+
+        if(RedPawnNumber > 0)
+        {
+                
+            pos = getRandomMove(*p);
+            if(pos.x < 0 && pos.y < 0)
+            {
+                return 0;
+            }
+            directMove(p, RED, pos.x, pos.y);
+
+        }
+
+
+
+        if(WhitePawnsNumber <= 0 && RedPawnNumber <= 0)
         {
             return 0;
         }
-
-        directMove(p, WHITE, pos.x, pos.y);
-        
-        pos = getRandomMove(*p);
-        if(pos.x < 0 && pos.y < 0)
-        {
-            return 0;
-        }
-
-
-        directMove(p, RED, pos.x, pos.y);
-
-        if(check_win(*p, X) == RED || PawnNumber <= 0)
+        else if(check_win(*p, X) == RED)
         {
             return 0;
         }
@@ -96,10 +122,10 @@ int endGame(plateau *p, int X, int CurrentPawnNumber)
             return 1;
         }
         
-        //printf("SecurityIndex: %d\n", SecurityIndex);
         
-        PawnNumber--;
-        SecurityIndex++;
+        WhitePawnsNumber--;
+        RedPawnNumber--;
+
 
 
     }
@@ -110,51 +136,57 @@ int endGame(plateau *p, int X, int CurrentPawnNumber)
 
 
 
-position Monte_Carlo(plateau *p, int X, int CurrentPawnNumber, int interation)
+position Monte_Carlo(plateau *p, int X, int interation, short phase)
 {
-    
+
     int maxScore = -INFINITY;
     int score = 0;
     int index = 0;
     
     position pos;
     
-    
-    plateau p2;
-    initPlateau(&p2, p->N);
-    copyBoard(*p, &p2);
-    
-    for(int i = 0; i < p->N; ++i)
+    if(PHASE_PLACEMENT)
     {
-        for(int j = 0; j < p->N; ++j)
-        {
-            printf("AI %%: %f\n", (float)(100.f * ((float)index / ((float)p->N * (float)p->N))));
-            if(p->plateau[i][j].couleur == NONE)
-            {
-                directMove(&p2, RED, j, i);
-                score = 0;
-                for(int k = 0; k < interation; ++k)
-                {
-                    score += endGame(&p2, X, CurrentPawnNumber);
-                    copyBoard(*p, &p2);
-                }
-                
-                if(score > maxScore)
-                {
-                    maxScore = score;
-                    pos.x = j;
-                    pos.y = i;
-                }
-                directMove(&p2, NONE, j, i);       
-            }
-            index++;
-        }
-    }
-    printf("AI %%: %f\n", (float)(100.f * ((float)index / ((float)p->N * (float)p->N))));
-    
-    freeboard(&p2);
-    
+
         
+        plateau p2;
+        initPlateau(&p2, p->N);
+        copyBoard(*p, &p2);
+        
+        for(int i = 0; i < p->N; ++i)
+        {
+            for(int j = 0; j < p->N; ++j)
+            {
+                printf("AI : %.1f %%\n", (float)(100.f * ((float)index / ((float)p->N * (float)p->N))));
+                if(p->plateau[i][j].couleur == NONE)
+                {
+                    directMove(&p2, RED, j, i);
+                    score = 0;
+                    for(int k = 0; k < interation; ++k)
+                    {
+                        score += endGamePlacement(&p2, X);
+                        copyBoard(*p, &p2);
+                    }
+                    
+                    if(score > maxScore)
+                    {
+                        maxScore = score;
+                        pos.x = j;
+                        pos.y = i;
+                    }
+                    directMove(&p2, NONE, j, i);       
+                }
+                index++;
+            }
+        }
+        printf("AI : %.1f %%\n", (float)(100.f * ((float)index / ((float)p->N * (float)p->N))));
+        
+        freeboard(&p2);
+        
+            
+    }
+    
+    
     return pos;
     
     

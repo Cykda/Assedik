@@ -7,6 +7,9 @@
 #include "../include/rules.h"
 
 
+#define PHASE_PLACEMENT 1
+#define PHASE_DEPLACEMENT 0
+
 
 
 
@@ -14,9 +17,10 @@ void copyBoard(plateau p, plateau* p2);
 
 
 position getRandomMove(plateau p);
-int endGame(plateau* p, int X, int CurrentPawnNumber);
+int countPawns(plateau p, short color);
+int endGamePlacement(plateau* p, int X);
 bool checkBoardEmpty(plateau p);
-position Monte_Carlo(plateau *p, int X, int CurrentPawnNumber, int interation);
+position Monte_Carlo(plateau *p, int X, int interation, short phase);
 
 
 

@@ -14,7 +14,7 @@
 
 
 
-
+/*
 int main(int argc, char** argv)
 {
     
@@ -126,6 +126,7 @@ int main(int argc, char** argv)
     free(Rpawns);
     return 0;
 }
+*/
 
 
 
@@ -225,7 +226,7 @@ int main(int argc, char** argv)
 }
 */
 
-/*
+
 int main(int argc, char** argv)
 {
     
@@ -257,9 +258,12 @@ int main(int argc, char** argv)
         
         move(&p, pawn);
         
-
+        if(check_win(p, X) != NONE)
+        {
+            break;
+        }
         
-        position pos = Monte_Carlo(&p, X, 10, 10000);
+        position pos = Monte_Carlo(&p, X, 100000, PHASE_PLACEMENT);
         printf("%d %d\n", pos.x, pos.y);
         directMove(&p, RED, pos.x, pos.y);
 
@@ -270,11 +274,18 @@ int main(int argc, char** argv)
 
         //printf("%d %d\n", pos.x, pos.y);
     }
+  
+   
 
+    
+    
+    printf("\n\n");
+    showBoard(p);
+    
+    
     printf("Game Terminated\n");
     
     freeboard(&p);
 
     return 0;
 }
-*/
