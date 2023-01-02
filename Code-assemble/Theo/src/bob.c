@@ -5,7 +5,7 @@
 
 
 
-void copyBoard(plateau p, plateau* p2)
+void copyBoard(plateau p, plateau* p2) // Fonction pour dupliquer un plateau de jeu
 {
     for(int i = 0; i < p.N; ++i)
     {
@@ -17,7 +17,7 @@ void copyBoard(plateau p, plateau* p2)
     }
 }
 
-position getRandomMove(plateau p)
+position getRandomMove(plateau p) // Fonction pour avoir une position aléatoire du plateau
 {
     
     position pos;
@@ -41,7 +41,7 @@ position getRandomMove(plateau p)
 }
 
 
-bool checkBoardEmpty(plateau p)
+bool checkBoardEmpty(plateau p) // Fonction qui regarde si le plateau a au moin une case de vide
 {
     for(int i = 0; i < p.N; ++i)
     {
@@ -57,7 +57,7 @@ bool checkBoardEmpty(plateau p)
     return false;
     
 }
-int countPawns(plateau p, short color)
+int countPawns(plateau p, short color) // Fonction qui compte les pions d'une certaine couleur sur le plateau
 {
     int pawnsCount = 0;
     for(int i = 0; i < p.N; ++i)
@@ -73,7 +73,7 @@ int countPawns(plateau p, short color)
     return pawnsCount;
 }
 
-int endGamePlacement(plateau *p, int X)
+int endGamePlacement(plateau *p, int X) // fonction qui finis la phase de placement de jeu de manière aléatoire
 {
 
     
@@ -133,7 +133,7 @@ int endGamePlacement(plateau *p, int X)
     
 }
 
-position getRandomPawnPos(plateau p, short color, int X)
+position getRandomPawnPos(plateau p, short color, int X) // Fonction qui renvoie une poisition aléatoire d'un pion sur le plateau
 {
 
 
@@ -178,7 +178,7 @@ position getRandomPawnPos(plateau p, short color, int X)
     
 }
 
-position getRandomDisplacement(plateau p, position pawn)
+position getRandomDisplacement(plateau p, position pawn) // Fonction qui revoire un déplacement aléatoire d'un pion
 {
    
    
@@ -242,7 +242,7 @@ position getRandomDisplacement(plateau p, position pawn)
     
 }
 
-position* getDisplacementPossibilities(plateau p, position pos)
+position* getDisplacementPossibilities(plateau p, position pos) // Fonction qui revoie toutes les possiblilités de déplacement sur le plateau
 {
     position* adjencyPos = malloc(sizeof(position) * 8);
     for(int i = 0; i < 8; ++i)
@@ -279,7 +279,7 @@ position* getDisplacementPossibilities(plateau p, position pos)
 
 
 
-int endGameDisplacement(plateau* p, int X)
+int endGameDisplacement(plateau* p, int X) // Fonction qui termine la phase de déplacement de façon aléatoire
 {
     
     position randomPosW;
@@ -386,7 +386,7 @@ int endGameDisplacement(plateau* p, int X)
 
 
 
-MonteCarlo Monte_Carlo(plateau *p, int X, int interation, short phase)
+MonteCarlo Monte_Carlo(plateau *p, int X, int interation, short phase) // Fonction qui joue le coup de l'IA pour les deux phases
 {
 
     int maxScore = -__INT_MAX__;
@@ -457,11 +457,10 @@ MonteCarlo Monte_Carlo(plateau *p, int X, int interation, short phase)
                 
                 if(p->plateau[i][j].info.couleur == RED)
                 {
-                    position *BufferPos = getDisplacementPossibilities(*p, (position){j, i});
+                    position *BufferPos = getDisplacementPossibilities(p2, (position){j, i});
                     for(int k = 0; k < 8; ++k)
                     {
                         
-                        //printf("\n\n%d %d %d\n\n", BufferPos[k].x, BufferPos[k].y, k);
                         
                         if(BufferPos[k].x != -1 && BufferPos[k].y != -1)
                         {
@@ -469,19 +468,16 @@ MonteCarlo Monte_Carlo(plateau *p, int X, int interation, short phase)
                             if(p->plateau[BufferPos[k].y][BufferPos[k].x].info.couleur == NONE)
                             {
                                 
-                                directMove(p, RED, BufferPos[k].x, BufferPos[k].y);
+                                directMove(&p2, RED, BufferPos[k].x, BufferPos[k].y);
                             
                                 
                                 score = 0;
                                 for(int l = 0; l < interation; ++l)
                                 {
-                                    score += endGameDisplacement(p, X);
-                                    //printf("1\n");
+                                    score += endGameDisplacement(&p2, X);
                                     copyBoard(*p, &p2);
-                                    //printf("2\n");
                                 }
 
-                                //printf("%d\n", index);
                                 if(score > maxScore)
                                 {
                                     
@@ -491,7 +487,7 @@ MonteCarlo Monte_Carlo(plateau *p, int X, int interation, short phase)
                                 }
                                 
                                 
-                                directMove(p, NONE, BufferPos[k].x, BufferPos[k].y);
+                                directMove(&p2, NONE, BufferPos[k].x, BufferPos[k].y);
                                 index++;
                             }
                         }

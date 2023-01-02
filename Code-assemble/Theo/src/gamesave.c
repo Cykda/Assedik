@@ -4,7 +4,7 @@
 #include "gamesave.h"
 
 
-void save_game(plateau p, char* path, short color) // aka Danielou
+void save_game(plateau p, char* path, short color) // Fonction qui sauvegarde le plateau
 {
 
     //char sentence[1000];
@@ -42,7 +42,7 @@ void save_game(plateau p, char* path, short color) // aka Danielou
 
 
 
-Board_Data load_game(char* path)
+Board_Data load_game(char* path) // Fonction qui charge une plateau de jeu
 {
     FILE *file;
     char *text;

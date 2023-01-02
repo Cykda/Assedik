@@ -18,6 +18,8 @@
 int main(int argc, char** argv)
 {
 
+    srand(time(NULL));
+    
     plateau p;
     pion pawn;
 
@@ -28,7 +30,7 @@ int main(int argc, char** argv)
     int Phase; //Phase actuelle du jeu (1 ou 2)
     int tour;//Variable qui sait quel joueur doit jouer
     int reponse_RED,reponse_WHITE;//Variable qui vois si le joueur choisis de déplacer le pion ou d'utiliser le coup spécial
-
+    int mode_jeu = 0;
 
     do {
         printf("\nDonnez la taille souhaitee pour la grille (entier, minimim 3 cases) \n");
@@ -49,6 +51,15 @@ int main(int argc, char** argv)
         scanf("%d",&X);
         fflush(stdin);
     } while (X>P);
+    
+    do
+    {
+        printf("\nDonnez le mode de jeu (1: jouer contre ordinateur ou 0: jouer a deux)\n");
+        scanf("%d", &mode_jeu);
+        fflush(stdin);
+    } while(mode_jeu != 0 && mode_jeu != 1);
+    
+    
     do {
         printf("\nDonnez le Joueur qui doit commencer (1: rouge ou 0: blanc)\n");
         scanf("%d",&tour);
@@ -65,13 +76,19 @@ int main(int argc, char** argv)
     initPlateau(&p, N);
     showBoard(p);
     Phase=1;
-
+    
     while(Phase==1)
     {
-        if (tour==1)
+        if (tour==1 && mode_jeu == 0)
         {
             pawn = inputPawn("Joueur rouge, c'est a vous. Voulez-vous quitter le programme ? Si oui, tapez 1. Sinon, tapez 0 --> ",
                              "Choisissez la position (X, Y): ",tour);
+        }
+        else if(tour == 1 && mode_jeu == 1)
+        {
+            MonteCarlo mc = Monte_Carlo(&p, X, 10000, PHASE_PLACEMENT);
+            pawn.info.couleur = RED;
+            pawn.pos = mc.pos_to_move;
         }
         if (tour==0)
         {
@@ -103,7 +120,7 @@ int main(int argc, char** argv)
             printf("\nposition non valide : Case deja occupee par un autre pion\n");
             continue;
         }
-        // BEGIN OF COMMENT
+
         if(pawn.info.couleur != 1 && pawn.info.couleur != 0 && pawn.info.couleur != -2)
         {
             printf("\nErreur de saisie de couleur\n");
@@ -115,7 +132,7 @@ int main(int argc, char** argv)
             printf("\nPlus de jetons %d Disponnibles (0 = Blanc ou 1 = Rouge)\n",pawn.info.couleur);
             continue;
         }
-        // END OF COMMENT
+
 
         placement(&p,pawn, &NBB, &NBR);
 
@@ -149,16 +166,17 @@ int main(int argc, char** argv)
 
         if (NBB<=0 && NBR<=0)
         {
-            printf("\n\nFelicitation, tout les pions sont places. La phase 1 est donc terminee. Comme personne n'a gagné suite a cette phase, on peut passer a la phase 2\n\n");
+            printf("\n\nFelicitation, tout les pions sont places. La phase 1 est donc terminee. Comme personne n'a gagne suite a cette phase, on peut passer a la phase 2\n\n");
             Phase=2;
         }
     }
+    
 
     while(Phase==2)
     {
         printf("\n");
         showBoard(p);
-        if (tour==1)
+        if (tour==1 && mode_jeu == 0)
         {
             if (reponse_RED==2)
             {
@@ -175,6 +193,13 @@ int main(int argc, char** argv)
                 reponse_RED=0;
                 continue;
             }
+        }
+        else if(mode_jeu == 1)
+        {
+            printf("\nC'est a l'IA de jouer\n");
+            MonteCarlo mc = Monte_Carlo(&p, X, 10000, PHASE_DEPLACEMENT);
+            directMove(&p, NONE, mc.pos_to_move.x, mc.pos_to_move.y);
+            directMove(&p, RED, mc.displacementPos.x, mc.displacementPos.y);
         }
         else if (tour==0)
         {
@@ -194,7 +219,7 @@ int main(int argc, char** argv)
                 continue;
             }
         }
-        if (tour==1)
+        if (tour==1 && mode_jeu == 0)
         {
             do
             {
@@ -227,7 +252,7 @@ int main(int argc, char** argv)
 
 
 
-        if (tour==1)
+        if (tour==1 && mode_jeu == 0)
         {
             if (reponse_RED==1)
             {
